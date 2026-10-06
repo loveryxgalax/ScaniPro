@@ -1,0 +1,386 @@
+<title>ScaniPro Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap">
+<style>
+/* Layout: a working-desk page. Left: the phone running the real app flows. Right: a screen index and notes. #shot-N renders App Store frames. */
+:root {
+  --page: #EEF0F3; --page-ink: #121A27; --page-muted: #566173; --page-line: #D5DAE2; --page-card: #FFFFFF;
+  --brand: #1C3F78; --gold: #B08D3C;
+  --display: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --ui: "IBM Plex Sans", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  /* app palette (light) — mirrors src/theme/index.ts */
+  --a-bg: #F4F6F9; --a-surface: #FFFFFF; --a-alt: #EEF1F6; --a-border: #DDE2EA; --a-text: #0E1726; --a-muted: #4A5568; --a-faint: #8792A2;
+  --a-primary: #1C3F78; --a-on-primary: #FFFFFF; --a-primary-soft: #E3EBF7; --a-success: #1F7A4D; --a-success-soft: #E1F3EA;
+  --a-warning: #9A6A00; --a-warning-soft: #FBF1D9; --a-danger: #B42318; --a-danger-soft: #FDE8E6; --a-mono: #2B3A55; --a-paper: #FFFFFF;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --page: #0D1117; --page-ink: #E6EAF0; --page-muted: #96A0B0; --page-line: #263041; --page-card: #151C27; color-scheme: dark;
+} }
+:root[data-theme="dark"] { --page: #0D1117; --page-ink: #E6EAF0; --page-muted: #96A0B0; --page-line: #263041; --page-card: #151C27; color-scheme: dark; }
+.app-dark {
+  --a-bg: #0B1220; --a-surface: #131C2E; --a-alt: #1A2539; --a-border: #26324A; --a-text: #E8EDF5; --a-muted: #A6B0C2; --a-faint: #6B778C;
+  --a-primary: #7FA6E8; --a-on-primary: #0B1220; --a-primary-soft: #1B2B47; --a-success: #5CC795; --a-success-soft: #143224;
+  --a-warning: #E5B04A; --a-warning-soft: #33290F; --a-danger: #F2867B; --a-danger-soft: #3A1A18; --a-mono: #C6D3EA; --a-paper: #E9E6DF;
+}
+* { box-sizing: border-box; }
+body { background: var(--page); color: var(--page-ink); font-family: var(--ui); margin: 0; }
+.desk { max-width: 1120px; margin: 0 auto; padding-block: 32px 56px; padding-inline: 20px; display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 40px; align-items: start; }
+@media (max-width: 860px) { .desk { grid-template-columns: minmax(0, 1fr); justify-items: center; } }
+.intro h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 4vw, 42px); letter-spacing: -0.02em; margin: 0 0 6px; text-wrap: balance; }
+.intro p { color: var(--page-muted); max-width: 58ch; line-height: 1.55; margin: 0 0 14px; }
+.eyebrow { font: 600 11px/1 var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 24px; }
+.chip { font: 500 13px var(--ui); color: var(--page-ink); background: var(--page-card); border: 1px solid var(--page-line); border-radius: 999px; padding: 7px 13px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+.chip:focus-visible, .tap:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.notes { display: grid; gap: 10px; }
+.note { background: var(--page-card); border: 1px solid var(--page-line); border-radius: 12px; padding: 14px 16px; min-width: 0; }
+.note b { display: block; font-size: 14px; margin-bottom: 3px; }
+.note span { color: var(--page-muted); font-size: 13.5px; line-height: 1.5; }
+.intro p.legend { font-size: 12.5px; color: var(--page-muted); margin-top: 18px; }
+
+/* Phone */
+.phone { width: 390px; max-width: 100%; aspect-ratio: 390 / 844; border-radius: 54px; padding: 12px; background: #0A0D12; box-shadow: 0 30px 60px -20px rgba(10,20,40,.45), inset 0 0 0 2px #2A2F38; position: relative; }
+.screen { width: 100%; height: 100%; border-radius: 43px; overflow: hidden; background: var(--a-bg); color: var(--a-text); position: relative; display: flex; flex-direction: column; font-family: var(--ui); }
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 112px; height: 32px; border-radius: 20px; background: #000; z-index: 5; }
+.status { height: 50px; flex: none; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 30px 6px 36px; font: 600 15px var(--ui); color: var(--a-text); }
+.status i { font-style: normal; letter-spacing: 1px; font-size: 12px; }
+.nav { flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 18px 4px; min-height: 40px; color: var(--a-primary); font-size: 16px; }
+.nav .t { color: var(--a-text); font-weight: 600; font-size: 16px; }
+.nav .icons { display: flex; gap: 18px; }
+.body { flex: 1; overflow-y: auto; padding: 4px 16px 110px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
+.body::-webkit-scrollbar { display: none; }
+.large { font: 700 32px/1.1 var(--ui); letter-spacing: -0.02em; margin: 2px 0 2px; }
+.h2 { font: 700 23px/1.2 var(--ui); letter-spacing: -0.01em; margin: 0; }
+.cap { color: var(--a-muted); font-size: 13px; line-height: 1.4; }
+.lab { color: var(--a-faint); font: 700 10.5px var(--ui); letter-spacing: .08em; text-transform: uppercase; }
+.mono { font-family: var(--mono); font-size: 11.5px; color: var(--a-mono); word-break: break-all; line-height: 1.45; }
+.card { background: var(--a-surface); border: 1px solid var(--a-border); border-radius: 16px; padding: 14px; }
+.tap { cursor: pointer; transition: transform .12s ease; }
+.tap:active { transform: scale(.985); }
+.row { display: flex; gap: 12px; align-items: flex-start; }
+.grow { flex: 1; min-width: 0; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; font: 600 11.5px var(--ui); border-radius: 999px; padding: 3px 8px; background: var(--a-alt); color: var(--a-muted); }
+.badge.p { background: var(--a-primary-soft); color: var(--a-primary); }
+.badge.s { background: var(--a-success-soft); color: var(--a-success); }
+.badge.w { background: var(--a-warning-soft); color: var(--a-warning); }
+.icon-tile { width: 42px; height: 42px; border-radius: 12px; background: var(--a-primary-soft); display: grid; place-items: center; flex: none; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; border-radius: 12px; background: var(--a-primary); color: var(--a-on-primary); font: 600 16px var(--ui); border: 0; width: 100%; cursor: pointer; }
+.btn.sec { background: var(--a-primary-soft); color: var(--a-primary); }
+.btn.ghost { background: transparent; color: var(--a-primary); min-height: 40px; }
+.dock { position: absolute; left: 16px; right: 16px; bottom: 30px; }
+.home-ind { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 3px; background: var(--a-text); opacity: .85; }
+.seg { display: flex; background: var(--a-alt); border-radius: 12px; padding: 3px; }
+.seg span { flex: 1; text-align: center; padding: 7px 0; font-size: 12.5px; color: var(--a-muted); border-radius: 9px; cursor: pointer; }
+.seg span.on { background: var(--a-surface); color: var(--a-text); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.banner { border-radius: 12px; padding: 11px 12px; display: flex; gap: 10px; }
+.banner.s { background: var(--a-success-soft); } .banner.s b { color: var(--a-success); }
+.banner.p { background: var(--a-primary-soft); } .banner.p b { color: var(--a-primary); }
+.banner.w { background: var(--a-warning-soft); } .banner.w b { color: var(--a-warning); }
+.banner b { display: block; font-size: 14px; margin-bottom: 2px; }
+.banner span { font-size: 12.5px; line-height: 1.4; color: var(--a-text); }
+.hash { background: var(--a-alt); border-radius: 8px; padding: 7px 8px; margin-top: 4px; }
+.exno { background: var(--a-primary); color: var(--a-on-primary); font: 700 11px var(--ui); border-radius: 6px; padding: 2px 7px; }
+.thumb { width: 60px; height: 80px; border-radius: 6px; background: var(--a-paper); border: 1px solid var(--a-border); flex: none; position: relative; overflow: hidden; padding: 9px 7px; display: flex; flex-direction: column; gap: 4px; }
+.thumb i { display: block; height: 3px; border-radius: 2px; background: #C8CED8; }
+.thumb i.h { height: 5px; background: #8994A6; width: 70%; }
+.page { background: var(--a-paper); border: 1px solid var(--a-border); border-radius: 6px; aspect-ratio: 8.5 / 11; position: relative; padding: 26px 24px; display: flex; flex-direction: column; gap: 7px; overflow: hidden; color: #1d2430; }
+.page .ttl { font: 700 13px var(--display); text-align: center; letter-spacing: .06em; margin-bottom: 6px; }
+.page p { margin: 0; font: 400 7.6px/1.55 var(--display); color: #39414f; }
+.page .sig { position: absolute; right: 26px; bottom: 54px; width: 150px; }
+.page .line { position: absolute; right: 22px; bottom: 50px; width: 160px; border-top: 1px solid #9aa3b1; }
+.page .stamp { position: absolute; left: 0; right: 0; bottom: 0; font: 5.6px var(--mono); color: #5b6474; background: #fff; padding: 3px 6px; white-space: nowrap; overflow: hidden; }
+.tl { display: flex; gap: 12px; }
+.tl .dot { width: 30px; height: 30px; border-radius: 15px; background: var(--a-primary-soft); display: grid; place-items: center; flex: none; }
+.tl .rail { width: 2px; background: var(--a-border); flex: 1; margin: 2px auto; }
+.tl .col { display: flex; flex-direction: column; align-items: center; }
+.tl .entry { padding-bottom: 14px; min-width: 0; flex: 1; }
+.tl .entry b { font-size: 14.5px; }
+.list .item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--a-border); }
+.list .item:last-child { border-bottom: 0; }
+.toggle { width: 46px; height: 28px; border-radius: 14px; background: var(--a-success); position: relative; flex: none; }
+.toggle::after { content: ""; position: absolute; right: 2px; top: 2px; width: 24px; height: 24px; border-radius: 12px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.toggle.off { background: var(--a-border); } .toggle.off::after { right: auto; left: 2px; }
+.search { display: flex; align-items: center; gap: 8px; background: var(--a-surface); border: 1px solid var(--a-primary); border-radius: 12px; padding: 11px 12px; font-size: 16px; }
+mark { background: var(--a-warning-soft); color: var(--a-text); font-weight: 700; border-radius: 3px; padding: 0 2px; }
+.lock { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; gap: 6px; }
+.tools { position: absolute; left: 0; right: 0; bottom: 22px; display: flex; justify-content: space-around; align-items: center; padding: 10px 14px; border-top: 1px solid var(--a-border); background: var(--a-bg); }
+.tool { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10.5px; color: var(--a-muted); padding: 5px 10px; border-radius: 10px; }
+.tool.on { background: var(--a-primary-soft); color: var(--a-primary); }
+.sw { width: 22px; height: 22px; border-radius: 11px; display: inline-block; border: 1px solid var(--a-border); }
+svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+svg.i.sm { width: 14px; height: 14px; }
+
+/* Screenshot mode (#shot-N): 430×932 CSS px at 3× = 1290×2796 */
+body.shot { margin: 0; padding: 0; overflow: hidden; }
+body.shot .desk { display: none; }
+.shotframe { display: none; }
+body.shot .shotframe { display: flex; width: 430px; height: 932px; flex-direction: column; align-items: center; padding: 58px 26px 0; position: relative; overflow: hidden; background: linear-gradient(180deg, #13284D 0%, #1C3F78 62%, #24508F 100%); }
+body.shot.shot-dark .shotframe { background: linear-gradient(180deg, #05080F 0%, #0B1220 60%, #132240 100%); }
+.shotframe .kicker { font: 600 11px var(--ui); letter-spacing: .2em; text-transform: uppercase; color: #D9BE7C; }
+#shot-title { font: 700 37px/1.08 var(--display); color: #fff; text-align: center; margin: 12px 0 10px; letter-spacing: -0.015em; text-wrap: balance; }
+#shot-sub { font: 400 15.5px/1.45 var(--ui); color: #C8D3E6; text-align: center; margin: 0 0 26px; max-width: 34ch; }
+.shotframe .phone { width: 352px; flex: none; }
+</style>
+
+<div class="desk" id="desk">
+  <section class="intro" aria-label="About this preview">
+    <div class="eyebrow">Interactive preview · iPhone</div>
+    <h1>ScaniPro</h1>
+    <p>A privacy-first evidence scanner. This preview runs the app's real flows with sample data so you can review layout, copy and both colour modes before the native build. Tap cards and buttons inside the phone, or jump to any screen below.</p>
+    <div class="controls" id="screens" role="group" aria-label="Screens"></div>
+    <div class="controls" role="group" aria-label="Appearance">
+      <button class="chip" id="mode-light" aria-pressed="true">Light app</button>
+      <button class="chip" id="mode-dark" aria-pressed="false">Dark app</button>
+    </div>
+    <div class="notes" id="notes"></div>
+    <p class="legend">Sample matter, names and hashes are illustrative. Fonts here approximate iOS system type.</p>
+  </section>
+  <div id="phone-slot"></div>
+</div>
+<div class="shotframe" id="shotframe" aria-hidden="true">
+  <div class="kicker" id="shot-kicker"></div>
+  <h2 id="shot-title"></h2>
+  <p id="shot-sub"></p>
+  <div id="shot-phone"></div>
+</div>
+
+<script>
+const I = {
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  case: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  shield: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  scan: '<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/>',
+  back: '<path d="m15 18-6-6 6-6"/>',
+  more: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="12" r=".6" fill="currentColor"/><circle cx="12" cy="12" r=".6" fill="currentColor"/><circle cx="16" cy="12" r=".6" fill="currentColor"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  share: '<path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
+  sign: '<path d="M4 20h16"/><path d="m14.5 4.5 5 5L9 20H4v-5z"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  cam: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  text: '<path d="M5 6V4h14v2M12 4v16M9 20h6"/>',
+  doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/>',
+  pen: '<path d="m4 20 4-1 11-11-3-3L5 16z"/>',
+  brief: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5h8v2"/>',
+  check: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+  fp: '<path d="M12 11v4M8.5 8.5a5 5 0 0 1 8.5 3.5v2M7 12v2a5 5 0 0 0 1.5 3.5M12 7a5 5 0 0 0-5 5M17 16a8 8 0 0 1-1.5 3.5"/>',
+  zip: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M12 3v4M12 9v2M12 13v2"/>',
+  grid: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M4 15h16M10 4v16"/>',
+  code: '<path d="m9 8-4 4 4 4M15 8l4 4-4 4"/>',
+  star: '<path d="m12 4 2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 16.3 7 19l1.2-5.6L4 9.6 9.6 9z"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  phone: '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>',
+};
+const ic = (n, cls = '', color) => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true"${color ? ` style="color:${color}"` : ''}>${I[n]}</svg>`;
+
+const H = {
+  e1: '9f2c4e81a7d03b56c1e98f4420ab7d6e3c51f0928b4d7e16a2c93f05d8e4b712',
+  e1cap: '4b7e0d12f9a83c65e2d104b7a9c3f58e61d02b47c9a8e3f150d6b29e7c4a8f03',
+  p1: '1a6f3e9d27c4b850f3a1d6e92c7b048e5f13a9d07c2e6b84f9d1a3c5e70b2d48',
+  p2: 'c83a51e07d29f4b6a1e8c3d5079f2b4e6a1d8c35f7092e4b6d1a8c3e5f70b29d',
+  v2: 'e05b7c3a91d4f826b3e0c7a59d2f146e8b3c0a5d7f9e2b416c8a3d0e5f7b9c21',
+  ent: ['7d1e4b0a', 'a93f2c61', '2c8e5d17', 'f4b6091e', '61d3a8c2', '0b9e47f3', 'd25c8a19'],
+  packet: '3f81c0a6d9e2b74c5a1f08e3d6b29c47e0a5d18f3c7b6e924a1d0c8f5e3b7a26',
+};
+const EXHIBITS = [
+  { n: 1, t: 'Residential lease agreement', p: 6, d: 'Oct 2, 2026, 9:14 AM', h: H.e1, v: 1 },
+  { n: 2, t: 'Notice to vacate (Sept 2)', p: 1, d: 'Oct 2, 2026, 9:18 AM', h: 'b2d47a90e3c16f85d0a2e7c49b1f3d68a5e0c27b9d4f1a63e8c05b27d9f4a1e6', v: 1 },
+  { n: 3, t: 'Repair request emails', p: 4, d: 'Oct 3, 2026, 4:41 PM', h: '58e1c7a3f09d24b6e1c8a5d37f0b29e4c6a1d83f5b07e2c9a4d16f8b3e05c7a2', v: 1 },
+  { n: 4, t: 'Plumber invoice #20417', p: 2, d: 'Oct 4, 2026, 11:02 AM', h: '06a9d3e7b1c48f25a0e9d6c3b7f14e82d5a0c9e3f6b28d17a4e0c5b9f3d6a842', v: 1, proc: true },
+  { n: 5, t: 'Security deposit receipt', p: 1, d: 'Oct 5, 2026, 8:37 AM', h: H.v2, v: 2 },
+];
+
+let state = { screen: 'cases', tab: 'pages', dark: false };
+const nav = (screen, extra = {}) => { state = { ...state, screen, ...extra }; render(); };
+
+const status = () => `<div class="island"></div><div class="status"><span>9:41</span><i>●●●● ▲ ▮</i></div>`;
+const header = (title, opts = {}) => `<div class="nav">${opts.back ? `<span class="tap" role="button" tabindex="0" data-go="${opts.back}" style="display:flex;align-items:center;gap:2px">${ic('back')}${opts.backLabel || ''}</span>` : '<span></span>'}<span class="t">${title || ''}</span><span class="icons">${opts.right || ''}</span></div>`;
+const shortH = (h, n = 8) => `${h.slice(0, n)}…${h.slice(-n)}`;
+const thumb = () => `<div class="thumb"><i class="h"></i><i></i><i></i><i style="width:80%"></i><i></i><i style="width:60%"></i><i></i><i style="width:75%"></i></div>`;
+
+const sig = (color = '#1D3A8A') => `<svg class="sig" viewBox="0 0 150 46" aria-hidden="true"><path d="M6 32c10-18 18-24 22-16s-8 22-2 20 14-26 20-24-4 22 2 20 10-14 16-14 4 10 10 8 12-12 18-12 6 8 12 6 14-6 24-4" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+const leasePage = (opts = {}) => `<div class="page"><div class="ttl">SECURITY DEPOSIT RECEIPT</div>
+<p>Received from <b>Dana Harper</b> the sum of One Thousand Eight Hundred Dollars ($1,800.00) as a security deposit for the premises at 418 Lakeside Drive, Unit 3B, pursuant to the lease dated March 1, 2025.</p>
+<p>The deposit is held in accordance with applicable state law and will be returned, less lawful deductions itemized in writing, within the statutory period after the tenancy ends.</p>
+<p>Landlord / Agent: Lakeside Property Management LLC</p><p>Date received: March 1, 2025</p>
+${opts.signed ? `${sig()}<div class="line"></div><div class="stamp">Derived version 2 of Exhibit 5 | base SHA-256 ${H.p2.slice(0, 40)}… | ScaniPro 1.0.0</div>` : '<div class="line"></div>'}</div>`;
+
+const screens = {
+  lock: () => `${status()}<div class="lock">
+    <div style="width:88px;height:88px;border-radius:24px;background:var(--a-primary);display:grid;place-items:center;color:var(--a-on-primary);margin-bottom:14px">${ic('shield').replace('class="i "', 'class="i " style="width:46px;height:46px"')}</div>
+    <div class="h2">ScaniPro</div><div class="cap">Your case files are locked. Everything stays on this iPhone.</div>
+    <div style="width:100%;margin-top:34px"><button class="btn" data-go="cases">${ic('scan')}Unlock with Face ID</button></div></div>`,
+
+  cases: () => `${status()}${header('', { right: `<span class="tap" data-go="search" role="button" tabindex="0">${ic('search')}</span><span class="tap" data-go="settings" role="button" tabindex="0">${ic('gear')}</span>` })}
+    <div class="body"><div class="large">Cases</div>
+    <div class="cap" style="color:var(--a-success);display:flex;align-items:center;gap:5px">${ic('lock', 'sm')}On-device only · no account · nothing uploaded</div>
+    ${[
+      ['Harper v. Lakeside Property Mgmt', 'CV-2026-01482', 5, 14, 'Aug 14, 2026', '12 min ago', 'case'],
+      ['Okafor — workplace investigation', 'HR-INV-0931', 8, 23, 'Sep 22, 2026', '2 d ago', null],
+      ['Storm damage claim, 77 Birch Rd', 'CLM 77-4410-HD', 11, 37, 'Jul 30, 2026', '6 d ago', null],
+    ].map(([t, r, e, p, d, a, go]) => `<div class="card tap" ${go ? `data-go="${go}"` : ''} role="button" tabindex="0"><div class="row"><div class="icon-tile" style="color:var(--a-primary)">${ic('case')}</div><div class="grow"><div style="font-weight:600;font-size:16.5px">${t}</div><div class="mono">Ref. ${r}</div><div class="badges"><span class="badge p">${e} exhibits</span><span class="badge">${p} pages</span><span class="badge">${d}</span></div></div></div><div class="cap" style="margin-top:10px">Last activity ${a}</div></div>`).join('')}
+    </div><div class="dock"><button class="btn">${ic('plus')}New Case</button></div>`,
+
+  case: () => `${status()}${header('CV-2026-01482', { back: 'cases', right: ic('more') })}
+    <div class="body"><div class="h2">Harper v. Lakeside Property Mgmt</div>
+    <div class="badges"><span class="badge">Matter date Aug 14, 2026</span><span class="badge p">5 exhibits</span></div>
+    <button class="btn sec tap" data-go="export">${ic('brief')}Export Packet</button>
+    ${EXHIBITS.map((x) => `<div class="card tap" ${x.n === 5 ? 'data-go="exhibit"' : x.n === 1 ? 'data-go="exhibit1"' : ''} role="button" tabindex="0" style="padding:11px"><div class="row">${thumb()}<div class="grow"><div style="display:flex;gap:6px;align-items:center"><span class="exno">EX. ${x.n}</span>${x.v > 1 ? `<span class="badge w">v${x.v}</span>` : ''}</div><div style="font-weight:600;font-size:15.5px;margin-top:5px">${x.t}</div><div class="cap">${x.p} page${x.p > 1 ? 's' : ''} · ${x.d}</div><div class="badges" style="align-items:center">${x.proc ? '<span class="badge p">Processing…</span>' : '<span class="badge s">Searchable</span>'}<span class="mono" style="font-size:10.5px">${shortH(x.h, 6)}</span></div></div></div></div>`).join('')}
+    </div><div class="dock"><button class="btn">${ic('scan')}Scan Exhibit</button></div>`,
+
+  exhibit: () => {
+    const t = state.tab;
+    const tabs = `<div class="seg">${[['pages', 'Pages'], ['text', 'Text'], ['integrity', 'Integrity'], ['custody', 'Log (7)']].map(([k, l]) => `<span class="${t === k ? 'on' : ''}" data-tab="${k}" role="tab" tabindex="0">${l}</span>`).join('')}</div>`;
+    let content = '';
+    if (t === 'pages') content = `<div class="badges"><span class="badge">v1 Original</span><span class="badge p">v2</span></div>
+      <div class="banner w">${ic('link', '', 'var(--a-warning)')}<div><b>Derived version</b><span>Signed (1 signature) from version 1. The original capture is unchanged and remains Version 1.</span></div></div>
+      ${leasePage({ signed: true })}<div class="cap">Page 1 · 2480×3508px · SHA-256 ${shortH(H.p2, 6)}</div>`;
+    if (t === 'text') content = `<div class="card"><div class="lab">Page 1</div><div style="font-size:14px;line-height:1.5;margin-top:6px">SECURITY DEPOSIT RECEIPT<br>Received from Dana Harper the sum of One Thousand Eight Hundred Dollars ($1,800.00) as a security deposit for the premises at 418 Lakeside Drive, Unit 3B, pursuant to the lease dated March 1, 2025…</div></div>`;
+    if (t === 'integrity') content = `<div class="banner s">${ic('check', '', 'var(--a-success)')}<div><b>Integrity verified</b><span>All 1 original page, 2 file versions and 7 custody entries match their recorded hashes. Checked Oct 6, 2026, 10:02 AM.</span></div></div>
+      <div class="card" style="display:flex;flex-direction:column;gap:10px"><div><div class="lab">Capture digest (original pages)</div><div class="hash mono">${H.e1cap}</div></div><div><div class="lab">Page 1 original image</div><div class="hash mono">${H.p2}</div></div></div>
+      <div class="lab">File versions</div>
+      <div class="card"><div style="display:flex;justify-content:space-between"><b>Original</b></div><div class="cap">Searchable PDF of the original capture</div><div class="hash mono">${H.e1}</div></div>
+      <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>Version 2 (derived)</b><span class="badge p">Current</span></div><div class="cap">Signed from version 1 · Oct 5, 2026</div><div class="hash mono">${H.v2}</div></div>`;
+    if (t === 'custody') {
+      const rows = [
+        ['cam', 'Captured', 'Oct 5, 2026, 8:37:12 AM', '2026-10-05T15:37:12.408Z', H.e1cap],
+        ['text', 'Text recognised (OCR)', 'Oct 5, 2026, 8:37:15 AM', '2026-10-05T15:37:15.902Z', H.e1cap],
+        ['doc', 'Searchable PDF generated', 'Oct 5, 2026, 8:37:16 AM', '2026-10-05T15:37:16.230Z', H.e1],
+        ['pen', 'Renamed', 'Oct 5, 2026, 8:39:40 AM', '2026-10-05T15:39:40.117Z', H.e1],
+        ['sign', 'Signed (derived version)', 'Oct 5, 2026, 2:11:03 PM', '2026-10-05T21:11:03.551Z', H.v2],
+        ['shield', 'Integrity verified', 'Oct 6, 2026, 10:02:48 AM', '2026-10-06T17:02:48.004Z', H.v2],
+        ['brief', 'Exported in evidence packet', 'Oct 6, 2026, 10:05:19 AM', '2026-10-06T17:05:19.660Z', H.v2],
+      ];
+      content = `<div class="banner s">${ic('link', '', 'var(--a-success)')}<div><b>Hash chain intact · 7 entries</b><span>Each entry is sealed with the hash of the one before it. Entries can only be added, never edited or removed.</span></div></div><div>${rows.map(([icn, a, d, iso, fh], i) => `<div class="tl"><div class="col"><div class="dot" style="color:var(--a-primary)">${ic(icn, 'sm')}</div>${i < rows.length - 1 ? '<div class="rail"></div>' : ''}</div><div class="entry"><div style="display:flex;justify-content:space-between"><b>${a}</b><span class="cap">#${i + 1}</span></div><div class="cap">${d}</div><div class="mono" style="font-size:10.5px">${iso}</div><div class="cap">iPhone 16 Pro · iOS 26.0 · ScaniPro 1.0.0 (1)</div><div class="mono" style="font-size:10.5px">file ${shortH(fh, 10)}</div></div></div>`).join('')}</div>`;
+    }
+    return `${status()}${header('Exhibit 5', { back: 'case', right: ic('more') })}<div class="body">
+      <div class="h2">Security deposit receipt</div><div class="cap">Harper v. Lakeside · captured Oct 5, 2026, 8:37 AM · 1 page</div>
+      <div class="badges"><span class="badge s">${ic('link', 'sm')}Custody chain intact</span><span class="badge w">Version 2 (derived)</span></div>
+      <div style="display:flex;gap:10px"><button class="btn sec">${ic('share')}Share PDF</button><button class="btn sec tap" data-go="annotate">${ic('sign')}Sign</button></div>
+      ${tabs}${content}</div>`;
+  },
+
+  search: () => `${status()}${header('Search', { back: 'cases' })}<div class="body">
+    <div class="search">${ic('search', '', 'var(--a-faint)')}<span>deposit 1,800</span></div>
+    <div class="cap">Searches exhibit titles and recognised text across every case. The index lives only on this iPhone.</div>
+    ${[
+      ['Harper v. Lakeside · Exhibit 5 · page 1', 'Security deposit receipt', 'Received from Dana Harper the sum of One Thousand Eight Hundred Dollars (<mark>$1,800</mark>.00) as a security <mark>deposit</mark> for the premises at 418 Lakeside…', 'exhibit'],
+      ['Harper v. Lakeside · Exhibit 1 · page 4', 'Residential lease agreement', '…Tenant shall pay a security <mark>deposit</mark> of <mark>$1,800</mark> upon execution of this Lease, to be held…', null],
+      ['Harper v. Lakeside · Exhibit 3 · page 2', 'Repair request emails', '…and I would like the <mark>deposit</mark> to be held until the leak under the sink is repaired as promised on…', null],
+      ['Storm damage claim · Exhibit 6 · page 1', 'Contractor estimate', '…mitigation <mark>deposit</mark> required before work begins: <mark>$1,800</mark>.00 payable to Birch Restoration…', null],
+    ].map(([l, t, s, go]) => `<div class="card tap" ${go ? `data-go="${go}" data-tabset="text"` : ''} role="button" tabindex="0"><div class="lab">${l}</div><div style="font-weight:600;font-size:16px;margin:3px 0">${t}</div><div class="cap" style="font-size:13.5px">${s}</div></div>`).join('')}
+    </div>`,
+
+  export: () => `${status()}<div class="nav"><span></span><span class="t">Evidence Packet</span><span>Done</span></div><div class="body">
+    <div class="h2">Harper v. Lakeside Property Mgmt</div><div class="cap">5 exhibits · built entirely on this iPhone</div>
+    <div class="card"><div class="list">
+      <div class="item"><div class="grow"><div>Use latest versions</div><div class="cap">Signed/annotated versions where they exist (1)</div></div><div class="toggle"></div></div>
+      <div class="item"><div class="grow"><div>Embed exhibit files</div><div class="cap">Attach the exact exhibit PDFs so recipients can re-hash them</div></div><div class="toggle"></div></div></div></div>
+    <div class="banner s">${ic('check', '', 'var(--a-success)')}<div><b>Packet ready</b><span>5 exhibits · 18 pages. Custody entries were added to every exhibit.</span></div></div>
+    <div class="card" style="padding:4px 14px"><div class="list">
+      ${[['doc', 'Evidence packet (PDF)', 'Cover · index · exhibits · hash manifest · 2.4 MB'], ['zip', 'Complete bundle (ZIP)', 'Packet, exhibits, manifests, README · 4.1 MB'], ['grid', 'Hash manifest (CSV)', 'Opens in Numbers or Excel · 3 KB'], ['code', 'Hash manifest (JSON)', 'Machine-readable · 19 KB']].map(([i, t, s]) => `<div class="item"><span style="color:var(--a-primary)">${ic(i)}</span><div class="grow"><div>${t}</div><div class="cap">${s}</div></div><span style="color:var(--a-primary)">${ic('share')}</span></div>`).join('')}
+    </div></div>
+    <div><div class="lab">Packet SHA-256</div><div class="hash mono">${H.packet}</div></div></div>`,
+
+  packet: () => `${status()}<div class="nav"><span></span><span class="t">EvidencePacket_CV-2026-01482.pdf</span><span></span></div><div class="body" style="gap:14px">
+    <div class="page" style="padding:22px 20px;gap:5px"><div style="height:5px;background:#1C3F78;margin:-22px -20px 12px"></div>
+      <div style="font:700 7px var(--ui);letter-spacing:.14em;color:#1C3F78">EVIDENCE PACKET</div>
+      <div style="font:700 17px/1.15 var(--ui);color:#111">Harper v. Lakeside Property Mgmt</div>
+      ${[['Reference', 'CV-2026-01482'], ['Matter date', '2026-08-14'], ['Exhibits', '5'], ['Packet pages', '18'], ['Prepared (UTC)', '2026-10-06T17:05:19.660Z'], ['Device', 'iPhone 16 Pro, iOS 26.0']].map(([k, v]) => `<div style="display:flex;gap:8px;font-size:7.5px;border-top:1px solid #e3e6ec;padding-top:4px"><span style="width:70px;color:#6b7384;font-weight:700">${k.toUpperCase()}</span><span style="color:#111">${v}</span></div>`).join('')}
+      <p style="margin-top:6px">Every exhibit in this packet was captured with ScaniPro on the device named above. At the moment of capture, each page image was hashed with SHA-256 and recorded in an append-only, hash-chained custody log…</p></div>
+    <div class="page" style="padding:18px 20px;gap:4px"><div style="font:700 13px var(--ui);color:#111;margin-bottom:6px">Hash Manifest</div>
+      ${EXHIBITS.map((x) => `<div style="border-top:1px solid #e3e6ec;padding-top:4px;font-size:7px;color:#111"><b>Ex. ${x.n}</b> ${x.t}<div style="font:6.2px var(--mono);color:#2B3A55">SHA-256 ${x.h}</div></div>`).join('')}</div></div>`,
+
+  paywall: () => `${status()}<div class="nav"><span></span><span class="t">ScaniPro Pro</span><span>Close</span></div><div class="body">
+    <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px"><div style="width:68px;height:68px;border-radius:20px;background:var(--a-primary);display:grid;place-items:center;color:var(--a-on-primary)">${ic('shield').replace('class="i "', 'class="i " style="width:36px;height:36px"')}</div><div class="h2">ScaniPro Pro</div><div class="cap" style="font-size:14.5px">One-time purchase. No subscription, no account.</div></div>
+    <div class="banner p">${ic('star', '', 'var(--a-primary)')}<div><b>Evidence packet export is a Pro feature.</b><span>Upgrade once to remove every limit.</span></div></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px">${[['case', 'Unlimited cases', 'One case per matter, as many matters as you need.'], ['doc', 'Unlimited exhibits', 'Scan every page of every record.'], ['brief', 'Evidence packet export', 'Cover page, exhibit index, stamped exhibits, hash manifest, CSV and JSON.'], ['sign', 'Signatures & annotations', 'Saved as linked versions. The original stays untouched.']].map(([i, t, s]) => `<div class="row"><span style="color:var(--a-primary)">${ic(i)}</span><div><div style="font-weight:600">${t}</div><div class="cap">${s}</div></div></div>`).join('')}</div>
+    <button class="btn">${ic('lock')}Unlock Pro · $19.99</button><button class="btn ghost">Restore Purchases</button>
+    <div class="cap" style="text-align:center;font-size:11.5px">Payment is charged to your Apple Account at confirmation. Non-consumable; restored on any device signed in to the same Apple Account.</div></div>`,
+
+  settings: () => `${status()}${header('Settings', { back: 'cases' })}<div class="body">
+    <div class="lab">Security</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span style="color:var(--a-primary)">${ic('lock')}</span><div class="grow"><div>Require Face ID</div><div class="cap">Lock ScaniPro and hide it in the app switcher</div></div><div class="toggle"></div></div>
+    <div style="padding:6px 0 12px"><div class="cap" style="margin-bottom:6px">Lock again after leaving the app</div><div class="seg"><span class="on">Immediately</span><span>1 minute</span><span>5 minutes</span></div></div></div></div>
+    <div class="lab">ScaniPro Pro</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span style="color:var(--a-primary)">${ic('star')}</span><div class="grow"><div>Pro unlocked</div><div class="cap">Unlimited cases, packets and signatures</div></div><span class="badge s">Active</span></div><div class="item"><span style="color:var(--a-primary)">${ic('undo')}</span><div class="grow">Restore Purchases</div></div></div></div>
+    <div class="lab">Privacy</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span style="color:var(--a-primary)">${ic('phone')}</span><div class="grow"><div>Your documents never leave your phone</div><div class="cap">No account, no cloud, no analytics, no tracking. Files leave only when you share them.</div></div></div><div class="item"><span style="color:var(--a-primary)">${ic('shield')}</span><div class="grow">How evidence is protected</div></div></div></div>
+    <div class="lab">Storage</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span style="color:var(--a-primary)">${ic('folder')}</span><div class="grow">Evidence stored on this iPhone</div><span class="cap">48.6 MB</span></div></div></div>
+    <div class="cap" style="text-align:center">ScaniPro 1.0.0 (1) · iPhone 16 Pro · iOS 26.0</div></div>`,
+
+  annotate: () => `${status()}<div class="nav"><span>Cancel</span><span class="t">Exhibit 5</span><span style="font-weight:700">Save</span></div>
+    <div class="cap" style="text-align:center">Tap the page to place your signature.</div>
+    <div style="padding:12px 18px 0">${leasePage({ signed: true }).replace('<div class="stamp">', '<div class="stamp" style="display:none">')}</div>
+    <div class="tools"><span class="tool">${ic('pen')}Pen</span><span class="tool">${ic('text')}Text</span><span class="tool on">${ic('sign')}Sign</span><span style="display:flex;gap:7px"><span class="sw" style="background:#0E1726"></span><span class="sw" style="background:#1D3A8A;outline:3px solid #B08D3C"></span><span class="sw" style="background:#B42318"></span></span><span style="color:var(--a-primary)">${ic('undo')}</span></div>`,
+};
+screens.exhibit1 = screens.exhibit;
+
+const SCREEN_LIST = [['lock', 'Face ID lock'], ['cases', 'Cases'], ['case', 'Case & exhibits'], ['exhibit', 'Exhibit detail'], ['search', 'Search'], ['export', 'Export packet'], ['packet', 'Packet PDF'], ['annotate', 'Sign'], ['paywall', 'Paywall'], ['settings', 'Settings']];
+const NOTES = {
+  lock: ['Face ID or passcode on launch', 'Content is also hidden in the app switcher. Re-lock interval is set in Settings.'],
+  cases: ['One case per matter', 'Free tier: 1 case and 5 exhibits. The privacy line is always visible.'],
+  case: ['Exhibits are numbered automatically', 'Each row shows OCR status, version and the current SHA-256 prefix. Numbers are never reused.'],
+  exhibit: ['Four tabs: pages, text, integrity, log', 'Try the tabs. The custody log is hash-chained and append-only; tap Sign to see a derived version.'],
+  search: ['Full-text search across every case', 'SQLite FTS5 on device with highlighted snippets.'],
+  export: ['Evidence packet + CSV/JSON manifests', 'Exports refuse to run if any exhibit fails its integrity check.'],
+  packet: ['What the PDF looks like', 'Cover page, exhibit index, stamped exhibits and a hash manifest page.'],
+  annotate: ['Signatures create a new version', 'The original capture and Version 1 are never modified.'],
+  paywall: ['One-time Pro unlock', 'Handles pending (Ask to Buy), restore, and a price that fails to load.'],
+  settings: ['Security, purchases, privacy, storage', 'Delete All Data lives at the bottom behind a confirmation.'],
+};
+
+function bind(root) {
+  root.querySelectorAll('[data-go]').forEach((el) => {
+    const go = () => nav(el.dataset.go === 'exhibit1' ? 'exhibit' : el.dataset.go, el.dataset.tabset ? { tab: el.dataset.tabset } : el.dataset.go.startsWith('exhibit') ? { tab: 'pages' } : {});
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+  root.querySelectorAll('[data-tab]').forEach((el) => el.addEventListener('click', () => nav('exhibit', { tab: el.dataset.tab })));
+}
+
+function phoneHtml() {
+  return `<div class="phone"><div class="screen ${state.dark ? 'app-dark' : ''}" role="region" aria-label="App screen: ${state.screen}">${screens[state.screen]()}<div class="home-ind"></div></div></div>`;
+}
+
+function render() {
+  const slot = document.getElementById('phone-slot');
+  slot.innerHTML = phoneHtml();
+  bind(slot);
+  document.getElementById('screens').innerHTML = SCREEN_LIST.map(([k, l]) => `<button class="chip" data-screen="${k}" aria-pressed="${state.screen === k}">${l}</button>`).join('');
+  document.querySelectorAll('[data-screen]').forEach((b) => b.addEventListener('click', () => nav(b.dataset.screen, b.dataset.screen === 'exhibit' ? { tab: 'pages' } : {})));
+  const [t, s] = NOTES[state.screen] || NOTES.cases;
+  document.getElementById('notes').innerHTML = `<div class="note"><b>${t}</b><span>${s}</span></div><div class="note"><b>Your documents never leave your phone</b><span>No account, server, analytics or tracking. OCR uses Apple's on-device Vision framework; purchases go straight through Apple.</span></div>`;
+  document.getElementById('mode-light').setAttribute('aria-pressed', String(!state.dark));
+  document.getElementById('mode-dark').setAttribute('aria-pressed', String(state.dark));
+}
+document.getElementById('mode-light').addEventListener('click', () => { state.dark = false; render(); });
+document.getElementById('mode-dark').addEventListener('click', () => { state.dark = true; render(); });
+
+const SHOTS = [
+  { screen: 'cases', kicker: 'Private by design', title: 'Your documents never leave your phone', sub: 'No account. No cloud. No tracking. Every case lives on your iPhone.' },
+  { screen: 'exhibit', tab: 'integrity', kicker: 'Sealed at capture', title: 'Every page fingerprinted with SHA-256', sub: 'Verify any exhibit at any time. Originals are never modified.' },
+  { screen: 'exhibit', tab: 'custody', kicker: 'Chain of custody', title: 'A log that can only grow', sub: 'Timestamp, device, OS, app version and file hash on every action.' },
+  { screen: 'search', kicker: 'On-device OCR', title: 'Find any word in any exhibit', sub: 'Text recognition runs on your iPhone, even in airplane mode.' },
+  { screen: 'packet', kicker: 'Evidence packets', title: 'Cover, index, exhibits and hash manifest', sub: 'One PDF, plus CSV and JSON manifests anyone can check.', dark: true },
+  { screen: 'annotate', kicker: 'Sign & annotate', title: 'Sign without touching the original', sub: 'Every signature creates a new, linked version with its own hash.' },
+];
+
+const m = /^#shot-(\d)$/.exec(location.hash);
+if (m && SHOTS[Number(m[1]) - 1]) {
+  const s = SHOTS[Number(m[1]) - 1];
+  state = { ...state, screen: s.screen, tab: s.tab || 'pages', dark: !!s.dark };
+  document.body.classList.add('shot');
+  if (s.dark) document.body.classList.add('shot-dark');
+  document.getElementById('shot-kicker').textContent = s.kicker;
+  document.getElementById('shot-title').textContent = s.title;
+  document.getElementById('shot-sub').textContent = s.sub;
+  document.getElementById('shot-phone').innerHTML = phoneHtml();
+} else {
+  render();
+}
+</script>
