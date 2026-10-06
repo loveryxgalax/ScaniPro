@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect } from 'react';
 import { View } from 'react-native';
@@ -52,7 +52,15 @@ export default function PaywallScreen() {
 
   return (
     <Screen>
-      <View style={{ alignItems: 'center', gap: space.sm, marginTop: space.md }}>
+      <Stack.Screen
+        options={{
+          title: '',
+          headerRight: () => (
+            <Button title="Close" variant="ghost" onPress={() => router.back()} style={{ minHeight: 36, paddingHorizontal: 0 }} />
+          ),
+        }}
+      />
+      <View style={{ alignItems: 'center', gap: space.sm }}>
         <View style={{ width: 72, height: 72, borderRadius: 20, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' }}>
           <Ionicons name="shield-checkmark" size={38} color={c.primaryText} />
         </View>
