@@ -68,7 +68,8 @@
       },
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.USE_BIOMETRIC"
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
       ],
       "blockedPermissions": [
         "android.permission.INTERNET_ADS",
@@ -121,7 +122,11 @@
       "proProductId": "com.hyperadrenax.scanipro.pro",
       "supportUrl": "https://scanipro.pages.dev/support",
       "privacyUrl": "https://scanipro.pages.dev/privacy",
-      "supportEmail": "REPLACE_WITH_SUPPORT_EMAIL"
+      "supportEmail": "REPLACE_WITH_SUPPORT_EMAIL",
+      "router": {},
+      "eas": {
+        "projectId": "7e7d5585-ebc2-4247-812e-9841c6a7d4e3"
+      }
     }
   }
 }
