@@ -63,7 +63,7 @@ function provenance(l: Loaded): string[] {
     `Exhibit ${l.ex.number}, ${versionLabel(l.version)}, captured ${l.ex.captured_at}`,
     `Capture digest ${l.ex.capture_digest}`,
     `Exhibit PDF SHA-256 ${l.version.sha256}`,
-    `Exported by ScaniPro ${deviceContext().appVersion} on ${new Date().toISOString()}`,
+    `Exported by CaseSeal ${deviceContext().appVersion} on ${new Date().toISOString()}`,
   ];
 }
 

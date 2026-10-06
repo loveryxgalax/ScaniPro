@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 
 import { createStore } from './store';
 
-const SETTINGS_KEY = 'scanipro.lock.v1';
+const SETTINGS_KEY = 'caseseal.lock.v1';
 
 export type RelockAfter = 0 | 60 | 300;
 
@@ -73,7 +73,7 @@ export async function unlock(): Promise<boolean> {
       return true;
     }
     const r = await LocalAuthentication.authenticateAsync({
-      promptMessage: 'Unlock ScaniPro',
+      promptMessage: 'Unlock CaseSeal',
       fallbackLabel: 'Use Passcode',
       cancelLabel: 'Cancel',
       disableDeviceFallback: false,

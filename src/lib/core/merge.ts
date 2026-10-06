@@ -13,8 +13,8 @@ export async function mergePdfs(files: Uint8Array[], title: string, createdAt: D
     pages.forEach((p) => out.addPage(p));
   }
   out.setTitle(toWinAnsi(title));
-  out.setCreator(`ScaniPro ${appVersion}`);
-  out.setProducer(`ScaniPro ${appVersion} (pdf-lib)`);
+  out.setCreator(`CaseSeal ${appVersion}`);
+  out.setProducer(`CaseSeal ${appVersion} (pdf-lib)`);
   out.setCreationDate(createdAt);
   out.setModificationDate(createdAt);
   return saveDeterministic(out);

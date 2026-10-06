@@ -5,11 +5,11 @@ export type ProFeature = 'unlimited_cases' | 'unlimited_exhibits' | 'packet_expo
 type ProOnly = Exclude<ProFeature, 'unlimited_cases' | 'unlimited_exhibits'>;
 
 const PRO_REASONS: Record<ProOnly, string> = {
-  packet_export: 'Evidence packet export is part of ScaniPro Pro.',
-  signatures: 'Signatures and annotations are part of ScaniPro Pro.',
-  office_export: 'Word and PowerPoint export are part of ScaniPro Pro.',
-  merge: 'Merging exhibits into one PDF is part of ScaniPro Pro.',
-  expense_report: 'Expense reports are part of ScaniPro Pro.',
+  packet_export: 'Evidence packet export is part of CaseSeal Pro.',
+  signatures: 'Signatures and annotations are part of CaseSeal Pro.',
+  office_export: 'Word and PowerPoint export are part of CaseSeal Pro.',
+  merge: 'Merging exhibits into one PDF is part of CaseSeal Pro.',
+  expense_report: 'Expense reports are part of CaseSeal Pro.',
 };
 
 export type Gate = { allowed: true } | { allowed: false; feature: ProFeature; reason: string };

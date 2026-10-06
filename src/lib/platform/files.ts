@@ -1,10 +1,10 @@
 import { Directory, File, Paths } from 'expo-file-system';
 
 /**
- * All evidence lives under Documents/ScaniPro. Paths are stored relative to
+ * All evidence lives under Documents/CaseSeal. Paths are stored relative to
  * Documents because iOS changes the container path between app updates.
  */
-const ROOT = 'ScaniPro';
+const ROOT = 'CaseSeal';
 
 export function toAbsolute(relPath: string): File {
   return new File(Paths.document, ROOT, relPath);

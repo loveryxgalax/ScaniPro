@@ -140,11 +140,11 @@ export async function exportPacket(
   const manifestCsv = await saveExport(`${base}_manifest.csv`, csvBytes, 'csv');
 
   const readme = [
-    'ScaniPro evidence bundle',
+    'CaseSeal evidence bundle',
     '',
     `Case: ${c.title}${c.reference ? ` (Ref. ${c.reference})` : ''}`,
     `Generated (UTC): ${generatedAt.toISOString()}`,
-    `Device: ${device.deviceModel}, ${device.osName} ${device.osVersion}; ScaniPro ${device.appVersion} (${device.appBuild})`,
+    `Device: ${device.deviceModel}, ${device.osName} ${device.osVersion}; CaseSeal ${device.appVersion} (${device.appBuild})`,
     '',
     'Contents',
     `  ${packet.name}  SHA-256 ${packet.sha256}`,

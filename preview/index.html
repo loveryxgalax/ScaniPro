@@ -1,4 +1,4 @@
-<title>ScaniPro Preview</title>
+<title>CaseSeal Preview</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap">
@@ -150,7 +150,7 @@ body.shot.shot-light .shotframe { background: radial-gradient(90% 50% at 15% 0%,
 <div class="desk" id="desk">
   <section class="intro" aria-label="About this preview">
     <div class="eyebrow">Interactive preview · iPhone</div>
-    <h1>ScaniPro</h1>
+    <h1>CaseSeal</h1>
     <p>A privacy-first evidence scanner. This preview runs the app's real flows with sample data so you can review layout, copy and both colour modes before the native build. Tap cards and buttons inside the phone, or jump to any screen below.</p>
     <div class="controls" id="screens" role="group" aria-label="Screens"></div>
     <div class="controls" role="group" aria-label="Appearance">
@@ -241,12 +241,12 @@ const leasePage = (opts = {}) => `<div class="page"><div class="ttl">SECURITY DE
 <p>Received from <b>Dana Harper</b> the sum of One Thousand Eight Hundred Dollars ($1,800.00) as a security deposit for the premises at 418 Lakeside Drive, Unit 3B, pursuant to the lease dated March 1, 2025.</p>
 <p>The deposit is held in accordance with applicable state law and will be returned, less lawful deductions itemized in writing, within the statutory period after the tenancy ends.</p>
 <p>Landlord / Agent: Lakeside Property Management LLC</p><p>Date received: March 1, 2025</p>
-${opts.signed ? `${sig()}<div class="line"></div><div class="stamp">Derived version 2 of Exhibit 5 | base SHA-256 ${H.p2.slice(0, 40)}… | ScaniPro 1.0.0</div>` : '<div class="line"></div>'}</div>`;
+${opts.signed ? `${sig()}<div class="line"></div><div class="stamp">Derived version 2 of Exhibit 5 | base SHA-256 ${H.p2.slice(0, 40)}… | CaseSeal 1.0.0</div>` : '<div class="line"></div>'}</div>`;
 
 const screens = {
   lock: () => `${status()}<div class="lock">
     <div style="width:104px;height:104px;border-radius:33px;background:var(--a-grad);display:grid;place-items:center;color:#fff;margin-bottom:18px;box-shadow:0 18px 40px -10px var(--a-shadow)">${ic('shield').replace('class="i "', 'class="i " style="width:52px;height:52px"')}</div>
-    <div class="large">ScaniPro</div><div class="cap">Your case files are locked. Everything stays on this iPhone.</div>
+    <div class="large">CaseSeal</div><div class="cap">Your case files are locked. Everything stays on this iPhone.</div>
     <div style="width:100%;margin-top:34px"><button class="btn" data-go="cases">${ic('scan')}Unlock with Face ID</button></div></div>`,
 
   cases: () => `${status()}${header('', { right: `<span class="tap hbtn" data-go="search" role="button" tabindex="0">${ic('search', 'sm')}</span><span class="tap hbtn" role="button" tabindex="0">${ic('more', 'sm')}</span>` }).replace('<span></span>', `<span class="tap hbtn" data-go="settings" role="button" tabindex="0">${ic('gear', 'sm')}</span>`)}
@@ -301,7 +301,7 @@ const screens = {
         ['shield', 'Integrity verified', 'Oct 6, 2026, 10:02:48 AM', '2026-10-06T17:02:48.004Z', H.v2],
         ['brief', 'Exported in evidence packet', 'Oct 6, 2026, 10:05:19 AM', '2026-10-06T17:05:19.660Z', H.v2],
       ];
-      content = `<div class="banner s">${ic('link', '', 'var(--a-success)')}<div><b>Hash chain intact · 7 entries</b><span>Each entry is sealed with the hash of the one before it. Entries can only be added, never edited or removed.</span></div></div><div>${rows.map(([icn, a, d, iso, fh], i) => `<div class="tl"><div class="col"><div class="dot">${ic(icn, 'sm')}</div>${i < rows.length - 1 ? '<div class="rail"></div>' : ''}</div><div class="entry"><div style="display:flex;justify-content:space-between"><b>${a}</b><span class="cap">#${i + 1}</span></div><div class="cap">${d}</div><div class="mono" style="font-size:10.5px">${iso}</div><div class="cap">iPhone 16 Pro · iOS 26.0 · ScaniPro 1.0.0 (1)</div><div class="mono" style="font-size:10.5px">file ${shortH(fh, 10)}</div></div></div>`).join('')}</div>`;
+      content = `<div class="banner s">${ic('link', '', 'var(--a-success)')}<div><b>Hash chain intact · 7 entries</b><span>Each entry is sealed with the hash of the one before it. Entries can only be added, never edited or removed.</span></div></div><div>${rows.map(([icn, a, d, iso, fh], i) => `<div class="tl"><div class="col"><div class="dot">${ic(icn, 'sm')}</div>${i < rows.length - 1 ? '<div class="rail"></div>' : ''}</div><div class="entry"><div style="display:flex;justify-content:space-between"><b>${a}</b><span class="cap">#${i + 1}</span></div><div class="cap">${d}</div><div class="mono" style="font-size:10.5px">${iso}</div><div class="cap">iPhone 16 Pro · iOS 26.0 · CaseSeal 1.0.0 (1)</div><div class="mono" style="font-size:10.5px">file ${shortH(fh, 10)}</div></div></div>`).join('')}</div>`;
     }
     return `${status()}${header('Exhibit 5', { back: 'case', right: ic('more') })}<div class="body">
       <div class="large" style="font-size:30px">Security deposit receipt</div><div class="cap">Harper v. Lakeside · captured Oct 5, 2026, 8:37 AM · 1 page</div>
@@ -337,24 +337,24 @@ const screens = {
       <div style="font:700 7px var(--ui);letter-spacing:.14em;color:#1C3F78">EVIDENCE PACKET</div>
       <div style="font:700 17px/1.15 var(--ui);color:#111">Harper v. Lakeside Property Mgmt</div>
       ${[['Reference', 'CV-2026-01482'], ['Matter date', '2026-08-14'], ['Exhibits', '5'], ['Packet pages', '18'], ['Prepared (UTC)', '2026-10-06T17:05:19.660Z'], ['Device', 'iPhone 16 Pro, iOS 26.0']].map(([k, v]) => `<div style="display:flex;gap:8px;font-size:7.5px;border-top:1px solid #e3e6ec;padding-top:4px"><span style="width:70px;color:#6b7384;font-weight:700">${k.toUpperCase()}</span><span style="color:#111">${v}</span></div>`).join('')}
-      <p style="margin-top:6px">Every exhibit in this packet was captured with ScaniPro on the device named above. At the moment of capture, each page image was hashed with SHA-256 and recorded in an append-only, hash-chained custody log…</p></div>
+      <p style="margin-top:6px">Every exhibit in this packet was captured with CaseSeal on the device named above. At the moment of capture, each page image was hashed with SHA-256 and recorded in an append-only, hash-chained custody log…</p></div>
     <div class="page" style="padding:18px 20px;gap:4px"><div style="font:700 13px var(--ui);color:#111;margin-bottom:6px">Hash Manifest</div>
       ${EXHIBITS.map((x) => `<div style="border-top:1px solid #e3e6ec;padding-top:4px;font-size:7px;color:#111"><b>Ex. ${x.n}</b> ${x.t}<div style="font:6.2px var(--mono);color:#2B3A55">SHA-256 ${x.h}</div></div>`).join('')}</div></div>`,
 
-  paywall: () => `${status()}<div class="nav"><span></span><span class="t">ScaniPro Pro</span><span>Close</span></div><div class="body">
-    <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px"><div style="width:84px;height:84px;border-radius:27px;background:var(--a-grad);display:grid;place-items:center;color:#fff;box-shadow:0 16px 36px -10px var(--a-shadow)">${ic('star').replace('class="i "', 'class="i " style="width:42px;height:42px"')}</div><div class="large">ScaniPro Pro</div><div class="cap" style="font-size:14.5px">One-time purchase. No subscription, no account.</div></div>
+  paywall: () => `${status()}<div class="nav"><span></span><span class="t">CaseSeal Pro</span><span>Close</span></div><div class="body">
+    <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:6px"><div style="width:84px;height:84px;border-radius:27px;background:var(--a-grad);display:grid;place-items:center;color:#fff;box-shadow:0 16px 36px -10px var(--a-shadow)">${ic('star').replace('class="i "', 'class="i " style="width:42px;height:42px"')}</div><div class="large">CaseSeal Pro</div><div class="cap" style="font-size:14.5px">One-time purchase. No subscription, no account.</div></div>
     <div class="banner p">${ic('star', '', 'var(--a-primary)')}<div><b>Evidence packet export is a Pro feature.</b><span>Upgrade once to remove every limit.</span></div></div>
     <div class="card" style="display:flex;flex-direction:column;gap:14px">${[['case', 'Unlimited cases', 'One case per matter, as many matters as you need.'], ['doc', 'Unlimited exhibits', 'Scan every page of every record.'], ['brief', 'Evidence packet export', 'Cover page, exhibit index, stamped exhibits, hash manifest, CSV and JSON.'], ['sign', 'Signatures & annotations', 'Saved as linked versions. The original stays untouched.']].map(([i, t, s]) => `<div class="row" style="align-items:center"><span class="icon-tile" style="width:40px;height:40px;border-radius:13px">${ic(i, 'sm')}</span><div><div style="font-weight:700">${t}</div><div class="cap">${s}</div></div></div>`).join('')}</div>
     <button class="btn">${ic('lock')}Unlock Pro · $19.99</button><button class="btn ghost">Restore Purchases</button>
     <div class="cap" style="text-align:center;font-size:11.5px">Payment is charged to your Apple Account at confirmation. Non-consumable; restored on any device signed in to the same Apple Account.</div></div>`,
 
   settings: () => `${status()}${header('Settings', { back: 'cases' })}<div class="body">
-    <div class="lab">Security</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span class="chip-i">${ic('lock', 'sm')}</span><div class="grow"><div>Require Face ID</div><div class="cap">Lock ScaniPro and hide it in the app switcher</div></div><div class="toggle"></div></div>
+    <div class="lab">Security</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span class="chip-i">${ic('lock', 'sm')}</span><div class="grow"><div>Require Face ID</div><div class="cap">Lock CaseSeal and hide it in the app switcher</div></div><div class="toggle"></div></div>
     <div style="padding:6px 0 12px"><div class="cap" style="margin-bottom:6px">Lock again after leaving the app</div><div class="seg"><span class="on">Immediately</span><span>1 minute</span><span>5 minutes</span></div></div></div></div>
-    <div class="lab">ScaniPro Pro</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span class="chip-i">${ic('star', 'sm')}</span><div class="grow"><div>Pro unlocked</div><div class="cap">Unlimited cases, packets and signatures</div></div><span class="badge s">Active</span></div><div class="item"><span class="chip-i">${ic('undo', 'sm')}</span><div class="grow">Restore Purchases</div></div></div></div>
+    <div class="lab">CaseSeal Pro</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span class="chip-i">${ic('star', 'sm')}</span><div class="grow"><div>Pro unlocked</div><div class="cap">Unlimited cases, packets and signatures</div></div><span class="badge s">Active</span></div><div class="item"><span class="chip-i">${ic('undo', 'sm')}</span><div class="grow">Restore Purchases</div></div></div></div>
     <div class="lab">Privacy</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span class="chip-i">${ic('phone', 'sm')}</span><div class="grow"><div>Your documents never leave your phone</div><div class="cap">No account, no cloud, no analytics, no tracking. Files leave only when you share them.</div></div></div><div class="item"><span class="chip-i">${ic('shield', 'sm')}</span><div class="grow">How evidence is protected</div></div></div></div>
     <div class="lab">Storage</div><div class="card" style="padding:4px 14px"><div class="list"><div class="item"><span class="chip-i">${ic('folder', 'sm')}</span><div class="grow">Evidence stored on this iPhone</div><span class="cap">48.6 MB</span></div></div></div>
-    <div class="cap" style="text-align:center">ScaniPro 1.0.0 (1) · iPhone 16 Pro · iOS 26.0</div></div>`,
+    <div class="cap" style="text-align:center">CaseSeal 1.0.0 (1) · iPhone 16 Pro · iOS 26.0</div></div>`,
 
   annotate: () => `${status()}<div class="nav"><span>Cancel</span><span class="t">Exhibit 5</span><span style="font-weight:700">Save</span></div>
     <div class="cap" style="text-align:center">Tap the page to place your signature.</div>

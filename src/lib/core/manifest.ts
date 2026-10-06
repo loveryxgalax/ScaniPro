@@ -1,7 +1,7 @@
 import type { PacketPageRange } from './packetPdf';
 import type { DeviceContext } from './types';
 
-export const MANIFEST_SCHEMA = 'scanipro.evidence-manifest/v1';
+export const MANIFEST_SCHEMA = 'caseseal.evidence-manifest/v1';
 
 export type ManifestExhibit = {
   number: number;
@@ -19,7 +19,7 @@ export type ManifestExhibit = {
 export type Manifest = {
   schema: typeof MANIFEST_SCHEMA;
   generatedAt: string;
-  generator: DeviceContext & { app: 'ScaniPro' };
+  generator: DeviceContext & { app: 'CaseSeal' };
   case: { id: string; title: string; reference: string | null; matterDate: string | null };
   packet: { fileName: string; sha256: string; bytes: number; pageCount: number; exhibitFilesEmbedded: boolean };
   exhibits: (ManifestExhibit & { packetPages: { start: number; end: number } | null })[];
@@ -39,7 +39,7 @@ export function buildManifest(args: {
   return {
     schema: MANIFEST_SCHEMA,
     generatedAt: args.generatedAt.toISOString(),
-    generator: { app: 'ScaniPro', ...args.device },
+    generator: { app: 'CaseSeal', ...args.device },
     case: args.caseInfo,
     packet: args.packet,
     exhibits: [...args.exhibits]
@@ -50,7 +50,7 @@ export function buildManifest(args: {
       }),
     withdrawnExhibitNumbers: [...args.withdrawn].sort((a, b) => a - b),
     notes:
-      'All hashes are SHA-256, hex encoded. captureDigest = SHA-256 of "scanipro-capture-v1\\n" followed by the ' +
+      'All hashes are SHA-256, hex encoded. captureDigest = SHA-256 of "caseseal-capture-v1\\n" followed by the ' +
       'page sha256 values joined with "\\n". Custody entries are hash-chained: each entryHash commits to the ' +
       'previous entry. Generated entirely on-device; nothing was uploaded.',
   };

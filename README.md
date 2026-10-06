@@ -1,4 +1,4 @@
-# ScaniPro: PDF Scanner & OCR
+# CaseSeal: Evidence PDF Scanner
 
 A privacy-first, evidence-grade document scanner for iPhone. Every scan becomes a numbered exhibit with SHA-256 fingerprints, a timestamp and an append-only, hash-chained custody log. Nothing leaves the phone.
 
@@ -28,7 +28,7 @@ A privacy-first, evidence-grade document scanner for iPhone. Every scan becomes 
 - No backend, accounts, analytics, crash reporting or ads. `scripts/release-guard.mjs` fails production builds if a data-collecting SDK appears in `package.json`.
 - **OCR on iOS uses Apple Vision, not ML Kit.** Google ML Kit's iOS SDK sends usage telemetry (device info, app info, performance metrics) to Google by default, which would force a non-empty privacy label. ML Kit is excluded from iOS autolinking in `react-native.config.js` and used on Android only. Revisit before shipping on Android (Data safety form).
 - **Purchases use StoreKit directly, not RevenueCat.** RevenueCat requires declaring "Purchases" in the App Store privacy label; using StoreKit directly keeps the label at **Data Not Collected**.
-- Files live in `Documents/ScaniPro/` with `NSFileProtectionComplete` (entitlement `com.apple.developer.default-data-protection`).
+- Files live in `Documents/CaseSeal/` with `NSFileProtectionComplete` (entitlement `com.apple.developer.default-data-protection`).
 - Privacy manifest is declared in `app.json → ios.privacyManifests` (no tracking, no collected data, required-reason APIs).
 
 ## Tech stack
@@ -77,10 +77,13 @@ npm run guard:release  # what EAS runs before every production build
 ## Release
 
 1. Fill the placeholders: support email (`app.json` and `site/*.html`), `eas.json → submit.production.ios.ascAppId`, and the EAS project ID. The release guard lists anything still missing.
-2. Create the non-consumable IAP `com.hyperadrenax.scanipro.pro` in App Store Connect.
-3. Deploy `site/` to Cloudflare Pages (project name `scanipro` → `https://scanipro.pages.dev`). Framework preset: None, build command: empty, output directory: `site`. If you use another domain, update `app.json → extra.supportUrl/privacyUrl` and `store/listing.json`.
+2. Create the non-consumable IAP `com.hyperadrenax.caseseal.pro` in App Store Connect.
+3. Deploy `site/` to Cloudflare Pages (project name `caseseal` → `https://caseseal.pages.dev`). Framework preset: None, build command: empty, output directory: `site`. If you use another domain, update `app.json → extra.supportUrl/privacyUrl` and `store/listing.json`.
 4. `npm run build:prod && npm run submit:ios`.
 5. Follow **[APP-REVIEW.md](APP-REVIEW.md)** for listing, privacy label, review notes and the screen recording.
+6. Follow **[docs/DISCOVERY.md](docs/DISCOVERY.md)** for App Store search and Google search after launch.
+
+Note: the Expo project slug stays `scanipro` because it is tied to the EAS project ID; it is never shown to users.
 
 Regenerate store art after UI changes: `node scripts/render-store-assets.mjs` (needs Playwright + Chromium).
 

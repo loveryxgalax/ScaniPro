@@ -68,7 +68,7 @@ function CustodyEntryView({ row, last }: { row: CustodyRow; last: boolean }) {
           </View>
           <T variant="caption">{formatDateTime(row.timestamp)}</T>
           <T variant="mono" style={{ fontSize: 11 }}>{row.timestamp}</T>
-          <T variant="caption">{row.device_model} · {row.os_name} {row.os_version} · ScaniPro {row.app_version} ({row.app_build})</T>
+          <T variant="caption">{row.device_model} · {row.os_name} {row.os_version} · CaseSeal {row.app_version} ({row.app_build})</T>
           <T variant="mono" style={{ fontSize: 11 }}>file {shortHash(row.file_sha256, 10)}</T>
           {open ? (
             <View style={{ marginTop: space.sm, gap: space.sm }}>
@@ -274,7 +274,7 @@ export default function ExhibitScreen() {
               <Banner icon="hourglass-outline" title="Recognising text on this iPhone…" body="This takes a few seconds per page. Nothing is uploaded." />
             ) : null}
             {exhibit.kind === 'pdf' ? (
-              <Banner icon="document-text-outline" title="Imported PDFs keep their own text" body="ScaniPro doesn't alter imported PDFs, so it doesn't add an OCR layer. Search finds this exhibit by its title." />
+              <Banner icon="document-text-outline" title="Imported PDFs keep their own text" body="CaseSeal doesn't alter imported PDFs, so it doesn't add an OCR layer. Search finds this exhibit by its title." />
             ) : null}
             {exhibit.ocr_status === 'failed' ? (
               <Banner tone="warning" icon="alert-circle-outline" title="No text could be recognised" body="The exhibit is still sealed and usable; it just isn't searchable." />

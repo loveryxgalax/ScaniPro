@@ -32,7 +32,7 @@ export default function SettingsScreen() {
         <Row
           icon="lock-closed-outline"
           title={`Require ${biometryLabel}`}
-          subtitle="Lock ScaniPro and hide it in the app switcher"
+          subtitle="Lock CaseSeal and hide it in the app switcher"
           right={<Switch value={enabled} onValueChange={(v) => void setLockEnabled(v)} accessibilityLabel={`Require ${biometryLabel}`} />}
         />
         {enabled ? (
@@ -70,7 +70,7 @@ export default function SettingsScreen() {
         <Row icon="trash-outline" title="Recently Deleted" subtitle="Restore withdrawn exhibits for 30 days" onPress={() => router.push('/trash')} />
       </Card>
 
-      <T variant="label">ScaniPro Pro</T>
+      <T variant="label">CaseSeal Pro</T>
       <Card style={{ paddingVertical: space.sm, gap: 0 }}>
         <Row icon="star-outline" title={isPro ? 'Pro unlocked' : 'Upgrade to Pro'} subtitle={isPro ? 'Unlimited cases, packets and signatures' : 'One-time purchase'} right={isPro ? <Badge text="Active" tone="success" /> : undefined} onPress={isPro ? undefined : () => router.push('/paywall')} />
         <Divider />
@@ -79,7 +79,7 @@ export default function SettingsScreen() {
           title={purchaseState === 'restoring' ? 'Restoring…' : 'Restore Purchases'}
           onPress={async () => {
             const owned = await restorePro();
-            Alert.alert(owned ? 'Restored' : 'Nothing to restore', owned ? 'ScaniPro Pro is unlocked.' : (proStore.get().error ?? 'No previous purchase was found.'));
+            Alert.alert(owned ? 'Restored' : 'Nothing to restore', owned ? 'CaseSeal Pro is unlocked.' : (proStore.get().error ?? 'No previous purchase was found.'));
           }}
         />
       </Card>
@@ -106,7 +106,7 @@ export default function SettingsScreen() {
         {config.supportEmail ? (
           <>
             <Divider />
-            <Row icon="mail-outline" title="Contact Support" subtitle={config.supportEmail} onPress={() => void Linking.openURL(`mailto:${config.supportEmail}?subject=ScaniPro%20${Application.nativeApplicationVersion ?? ''}%20support`)} />
+            <Row icon="mail-outline" title="Contact Support" subtitle={config.supportEmail} onPress={() => void Linking.openURL(`mailto:${config.supportEmail}?subject=CaseSeal%20${Application.nativeApplicationVersion ?? ''}%20support`)} />
           </>
         ) : null}
       </Card>
@@ -126,7 +126,7 @@ export default function SettingsScreen() {
       </Card>
 
       <T variant="caption" style={{ textAlign: 'center' }}>
-        ScaniPro {device.appVersion} ({device.appBuild}) · {device.deviceModel} · {device.osName} {device.osVersion}
+        CaseSeal {device.appVersion} ({device.appBuild}) · {device.deviceModel} · {device.osName} {device.osVersion}
       </T>
     </Screen>
   );

@@ -64,7 +64,7 @@ export async function applyAnnotations(
   }
 
   const footer = toWinAnsi(
-    `${stamp.label} | base SHA-256 ${stamp.baseSha256} | ScaniPro ${stamp.appVersion}`,
+    `${stamp.label} | base SHA-256 ${stamp.baseSha256} | CaseSeal ${stamp.appVersion}`,
   );
   for (const page of pages) {
     const { width } = page.getSize();
@@ -75,6 +75,6 @@ export async function applyAnnotations(
   }
 
   doc.setModificationDate(stamp.createdAt);
-  doc.setProducer(`ScaniPro ${stamp.appVersion} (pdf-lib)`);
+  doc.setProducer(`CaseSeal ${stamp.appVersion} (pdf-lib)`);
   return saveDeterministic(doc);
 }

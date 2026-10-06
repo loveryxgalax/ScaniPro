@@ -119,7 +119,7 @@ export async function buildPacketPdf(input: PacketInput): Promise<PacketResult> 
       ['Exhibit pages', String(totalSourcePages)],
       ['Packet pages', String(total)],
       ['Prepared (UTC)', iso],
-      ['Prepared with', `ScaniPro ${input.device.appVersion} (${input.device.appBuild})`],
+      ['Prepared with', `CaseSeal ${input.device.appVersion} (${input.device.appBuild})`],
       ['Device', `${input.device.deviceModel}, ${input.device.osName} ${input.device.osVersion}`],
     ];
     rule(page, y);
@@ -134,7 +134,7 @@ export async function buildPacketPdf(input: PacketInput): Promise<PacketResult> 
     txt(page, 'INTEGRITY STATEMENT', M, y, 8, fonts.bold, MUTED);
     y -= 16;
     const statement =
-      'Every exhibit in this packet was captured with ScaniPro on the device named above. At the moment of capture, ' +
+      'Every exhibit in this packet was captured with CaseSeal on the device named above. At the moment of capture, ' +
       'each page image was hashed with SHA-256 and the result recorded in an append-only, hash-chained custody log. ' +
       `The SHA-256 of each exhibit file is listed in the Hash Manifest beginning on packet page ${manifestStartPage}. ` +
       (input.embedExhibitFiles
@@ -254,7 +254,7 @@ export async function buildPacketPdf(input: PacketInput): Promise<PacketResult> 
     }
     if (p === manifestPages - 1) {
       y -= 4;
-      txt(page, `Generated ${iso} by ScaniPro ${input.device.appVersion}. All processing performed on-device.`, M, y, 8, fonts.regular, MUTED);
+      txt(page, `Generated ${iso} by CaseSeal ${input.device.appVersion}. All processing performed on-device.`, M, y, 8, fonts.regular, MUTED);
     }
     pageFooter(page, fonts, label, manifestStartPage + p, total);
   }
@@ -272,8 +272,8 @@ export async function buildPacketPdf(input: PacketInput): Promise<PacketResult> 
 
   doc.setTitle(toWinAnsi(`Evidence Packet - ${input.caseTitle}`), { showInWindowTitleBar: true });
   doc.setSubject(toWinAnsi(label));
-  doc.setCreator(`ScaniPro ${input.device.appVersion}`);
-  doc.setProducer(`ScaniPro ${input.device.appVersion} (pdf-lib)`);
+  doc.setCreator(`CaseSeal ${input.device.appVersion}`);
+  doc.setProducer(`CaseSeal ${input.device.appVersion} (pdf-lib)`);
   doc.setCreationDate(input.generatedAt);
   doc.setModificationDate(input.generatedAt);
 

@@ -56,7 +56,7 @@ export function LockGate({ children }: { children: ReactNode }) {
           <View style={{ marginBottom: space.xl, shadowColor: c.shadow, shadowOpacity: 0.7, shadowRadius: 36, shadowOffset: { width: 0, height: 12 } }}>
             <IconChip icon="shield-checkmark" size={104} />
           </View>
-          <T variant="display">ScaniPro</T>
+          <T variant="display">CaseSeal</T>
           <T variant="caption" style={{ marginTop: 8, textAlign: 'center', fontSize: 15, lineHeight: 22, maxWidth: 280 }}>
             Your case files are locked. Everything stays on this iPhone.
           </T>

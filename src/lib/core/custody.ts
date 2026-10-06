@@ -67,7 +67,7 @@ export async function verifyChain(entries: CustodyEntry[], sha256: Sha256Fn): Pr
  * SHA-256 over the ordered list of per-page SHA-256 values.
  */
 export async function captureDigest(pageHashes: string[], sha256: Sha256Fn): Promise<string> {
-  return sha256(utf8(`scanipro-capture-v1\n${pageHashes.join('\n')}`));
+  return sha256(utf8(`caseseal-capture-v1\n${pageHashes.join('\n')}`));
 }
 
 export const ACTION_LABELS: Record<CustodyAction, string> = {

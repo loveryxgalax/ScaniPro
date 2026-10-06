@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://caseseal.pages.dev/sitemap.xml

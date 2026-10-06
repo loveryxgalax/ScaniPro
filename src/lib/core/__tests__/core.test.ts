@@ -33,7 +33,7 @@ function hasPdftotext() {
 }
 
 function pdfText(bytes: Uint8Array): string {
-  const dir = mkdtempSync(join(tmpdir(), 'scanipro-'));
+  const dir = mkdtempSync(join(tmpdir(), 'caseseal-'));
   const file = join(dir, 'f.pdf');
   writeFileSync(file, bytes);
   return execFileSync('pdftotext', ['-layout', file, '-']).toString();

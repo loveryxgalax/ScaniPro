@@ -121,7 +121,7 @@ export default function CaseScreen() {
           <EmptyState
             icon="scan-outline"
             title="Scan your first exhibit"
-            body="ScaniPro hashes every page the moment it's captured and starts a custody log. Exhibits are numbered automatically."
+            body="CaseSeal hashes every page the moment it's captured and starts a custody log. Exhibits are numbered automatically."
           />
         }
         renderItem={({ item }) => (

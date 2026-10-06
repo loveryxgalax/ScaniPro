@@ -236,7 +236,7 @@ export async function processExhibit(exhibitId: string) {
   }
   const pdf = await buildSearchablePdf(inputs, {
     title: `Exhibit ${fresh.number}: ${fresh.title}`,
-    subject: 'Captured with ScaniPro',
+    subject: 'Captured with CaseSeal',
     keywords: [`capture-digest:${fresh.capture_digest}`],
     createdAt: new Date(fresh.captured_at),
     appVersion: deviceContext().appVersion,

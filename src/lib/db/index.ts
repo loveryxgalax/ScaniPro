@@ -21,7 +21,7 @@ async function migrate(db: SQLiteDatabase) {
 export function getDb(): Promise<SQLiteDatabase> {
   if (!dbPromise) {
     dbPromise = (async () => {
-      const db = await openDatabaseAsync('scanipro.db');
+      const db = await openDatabaseAsync('caseseal.db');
       await migrate(db);
       return db;
     })().catch((e) => {

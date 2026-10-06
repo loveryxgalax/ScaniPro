@@ -97,11 +97,11 @@ export async function buildExpensePdf(input: ExpenseInput): Promise<Uint8Array> 
         x: M, y, size: 7.5, font, color: muted,
       });
     }
-    const footer = `ScaniPro ${input.appVersion} | page ${p + 1} of ${pages}`;
+    const footer = `CaseSeal ${input.appVersion} | page ${p + 1} of ${pages}`;
     page.drawText(footer, { x: W - M - font.widthOfTextAtSize(footer, 8), y: 28, size: 8, font, color: muted });
   }
   doc.setTitle(toWinAnsi(`Expense report - ${input.caseTitle}`));
-  doc.setProducer(`ScaniPro ${input.appVersion} (pdf-lib)`);
+  doc.setProducer(`CaseSeal ${input.appVersion} (pdf-lib)`);
   doc.setCreationDate(input.generatedAt);
   doc.setModificationDate(input.generatedAt);
   return saveDeterministic(doc);

@@ -51,7 +51,7 @@ export function useCapture() {
       else if (ids.length > 1 && !caseId) router.push({ pathname: '/case/[id]', params: { id: target } });
     } catch (e) {
       const msg = (e as Error).message;
-      Alert.alert(mode === 'scan' || mode === 'book' ? 'Scan failed' : 'Import failed', mode === 'scan' || mode === 'book' ? `${msg}\n\nCheck that ScaniPro has camera access in iOS Settings.` : msg);
+      Alert.alert(mode === 'scan' || mode === 'book' ? 'Scan failed' : 'Import failed', mode === 'scan' || mode === 'book' ? `${msg}\n\nCheck that CaseSeal has camera access in iOS Settings.` : msg);
     } finally {
       setBusy(null);
     }

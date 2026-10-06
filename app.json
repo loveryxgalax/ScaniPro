@@ -1,23 +1,23 @@
 {
   "expo": {
-    "name": "ScaniPro",
+    "name": "CaseSeal",
     "slug": "scanipro",
     "owner": "hyperadrenax",
-    "scheme": "scanipro",
+    "scheme": "caseseal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#070B14",
     "ios": {
-      "bundleIdentifier": "com.hyperadrenax.scanipro",
+      "bundleIdentifier": "com.hyperadrenax.caseseal",
       "supportsTablet": false,
       "config": {
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NSCameraUsageDescription": "ScaniPro uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
-        "NSFaceIDUsageDescription": "ScaniPro uses Face ID to lock your case files. Face ID data stays with iOS and is never accessible to ScaniPro."
+        "NSCameraUsageDescription": "CaseSeal uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
+        "NSFaceIDUsageDescription": "CaseSeal uses Face ID to lock your case files. Face ID data stays with iOS and is never accessible to CaseSeal."
       },
       "entitlements": {
         "com.apple.developer.default-data-protection": "NSFileProtectionComplete"
@@ -59,7 +59,7 @@
       "deploymentTarget": "16.4"
     },
     "android": {
-      "package": "com.hyperadrenax.scanipro",
+      "package": "com.hyperadrenax.caseseal",
       "adaptiveIcon": {
         "backgroundColor": "#070B14",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -95,13 +95,13 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "ScaniPro uses Face ID to lock your case files. Face ID data stays with iOS and is never accessible to ScaniPro."
+          "faceIDPermission": "CaseSeal uses Face ID to lock your case files. Face ID data stays with iOS and is never accessible to CaseSeal."
         }
       ],
       [
         "react-native-document-scanner-plugin",
         {
-          "cameraPermission": "ScaniPro uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded."
+          "cameraPermission": "CaseSeal uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded."
         }
       ],
       [
@@ -117,7 +117,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "ScaniPro uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
+          "cameraPermission": "CaseSeal uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
           "microphonePermission": false,
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": true
@@ -126,8 +126,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "ScaniPro opens your photo library only when you choose photos to import as evidence. Imported photos stay on this iPhone.",
-          "cameraPermission": "ScaniPro uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
+          "photosPermission": "CaseSeal opens your photo library only when you choose photos to import as evidence. Imported photos stay on this iPhone.",
+          "cameraPermission": "CaseSeal uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
           "microphonePermission": false
         }
       ]
@@ -136,9 +136,9 @@
       "typedRoutes": true
     },
     "extra": {
-      "proProductId": "com.hyperadrenax.scanipro.pro",
-      "supportUrl": "https://scanipro.pages.dev/support",
-      "privacyUrl": "https://scanipro.pages.dev/privacy",
+      "proProductId": "com.hyperadrenax.caseseal.pro",
+      "supportUrl": "https://caseseal.pages.dev/support",
+      "privacyUrl": "https://caseseal.pages.dev/privacy",
       "supportEmail": "REPLACE_WITH_SUPPORT_EMAIL",
       "router": {},
       "eas": {

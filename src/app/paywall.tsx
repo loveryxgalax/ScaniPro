@@ -69,7 +69,7 @@ export default function PaywallScreen() {
         <View style={{ shadowColor: c.shadow, shadowOpacity: 0.7, shadowRadius: 30, shadowOffset: { width: 0, height: 10 } }}>
           <IconChip icon="diamond" size={84} />
         </View>
-        <T variant="display" style={{ textAlign: 'center', marginTop: space.sm }}>ScaniPro Pro</T>
+        <T variant="display" style={{ textAlign: 'center', marginTop: space.sm }}>CaseSeal Pro</T>
         <T variant="caption" style={{ textAlign: 'center', fontSize: 15 }}>One-time purchase. No subscription, no account.</T>
       </View>
 

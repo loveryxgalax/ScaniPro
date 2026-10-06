@@ -39,8 +39,8 @@ function applyMeta(doc: PDFDocument, meta: PdfMeta) {
   doc.setTitle(toWinAnsi(meta.title), { showInWindowTitleBar: true });
   if (meta.subject) doc.setSubject(toWinAnsi(meta.subject));
   if (meta.keywords) doc.setKeywords(meta.keywords.map(toWinAnsi));
-  doc.setCreator(`ScaniPro ${meta.appVersion}`);
-  doc.setProducer(`ScaniPro ${meta.appVersion} (pdf-lib)`);
+  doc.setCreator(`CaseSeal ${meta.appVersion}`);
+  doc.setProducer(`CaseSeal ${meta.appVersion} (pdf-lib)`);
   doc.setCreationDate(meta.createdAt);
   doc.setModificationDate(meta.createdAt);
 }

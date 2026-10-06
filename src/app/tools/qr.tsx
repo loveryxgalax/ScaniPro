@@ -17,7 +17,7 @@ export default function QrScreen() {
   if (!permission.granted) {
     return (
       <Screen>
-        <Banner icon="camera-outline" title="Camera access needed" body="ScaniPro reads QR codes on this iPhone. Nothing is uploaded." />
+        <Banner icon="camera-outline" title="Camera access needed" body="CaseSeal reads QR codes on this iPhone. Nothing is uploaded." />
         <Button
           title={permission.canAskAgain ? 'Allow Camera' : 'Open iOS Settings'}
           icon="camera"

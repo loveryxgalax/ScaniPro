@@ -55,7 +55,7 @@ export default function RootLayout() {
   if (fatal) {
     return (
       <Screen>
-        <Banner tone="danger" icon="alert-circle" title="ScaniPro could not open its database" body={fatal} />
+        <Banner tone="danger" icon="alert-circle" title="CaseSeal could not open its database" body={fatal} />
       </Screen>
     );
   }
@@ -90,7 +90,7 @@ export default function RootLayout() {
             <Stack.Screen name="search" options={{ title: 'Search' }} />
             <Stack.Screen name="settings" options={{ title: 'Settings' }} />
             <Stack.Screen name="integrity" options={{ title: 'How Evidence Is Protected' }} />
-            <Stack.Screen name="paywall" options={{ presentation: 'modal', title: 'ScaniPro Pro' }} />
+            <Stack.Screen name="paywall" options={{ presentation: 'modal', title: 'CaseSeal Pro' }} />
             <Stack.Screen name="tools/index" options={{ title: 'Tools' }} />
             <Stack.Screen name="tools/pick" options={{ title: 'Choose Exhibit' }} />
             <Stack.Screen name="tools/text" options={{ title: 'Scan Text' }} />

@@ -18,7 +18,7 @@ import { Platform } from 'react-native';
 import { config } from '../config';
 import { createStore } from './store';
 
-const CACHE_KEY = 'scanipro.pro.v1';
+const CACHE_KEY = 'caseseal.pro.v1';
 
 export type PriceState = 'idle' | 'loading' | 'ready' | 'error';
 export type PurchaseState = 'idle' | 'purchasing' | 'pending' | 'restoring';
@@ -74,9 +74,9 @@ function errorText(e: PurchaseError | Error | unknown): string {
     case ErrorCode.NetworkError:
       return 'The App Store could not be reached. Check your connection and try again.';
     case ErrorCode.ItemUnavailable:
-      return 'ScaniPro Pro is not available in your region right now.';
+      return 'CaseSeal Pro is not available in your region right now.';
     case ErrorCode.AlreadyOwned:
-      return 'You already own ScaniPro Pro. Tap Restore Purchases.';
+      return 'You already own CaseSeal Pro. Tap Restore Purchases.';
     case ErrorCode.NotPrepared:
     case ErrorCode.ServiceError:
       return 'The App Store is temporarily unavailable. Please try again shortly.';
@@ -97,7 +97,7 @@ async function handlePurchase(purchase: Purchase) {
   }
   if (purchase.purchaseState === 'purchased') {
     await setPro(true);
-    proStore.set({ purchaseState: 'idle', message: 'ScaniPro Pro is unlocked. Thank you!', error: null });
+    proStore.set({ purchaseState: 'idle', message: 'CaseSeal Pro is unlocked. Thank you!', error: null });
     try {
       await finishTransaction({ purchase, isConsumable: false });
     } catch (e) {
@@ -197,8 +197,8 @@ export async function restorePro(): Promise<boolean> {
     proStore.set({
       purchaseState: 'idle',
       verified: true,
-      message: owned ? 'Your ScaniPro Pro purchase was restored.' : null,
-      error: owned ? null : 'No previous ScaniPro Pro purchase was found for this Apple Account.',
+      message: owned ? 'Your CaseSeal Pro purchase was restored.' : null,
+      error: owned ? null : 'No previous CaseSeal Pro purchase was found for this Apple Account.',
     });
     return owned;
   } catch (e) {

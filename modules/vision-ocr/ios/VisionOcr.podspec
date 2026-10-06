@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name           = 'VisionOcr'
   s.version        = '1.0.0'
   s.summary        = 'On-device OCR using Apple Vision'
-  s.description    = 'On-device text recognition for ScaniPro using Apple Vision. No network access.'
+  s.description    = 'On-device text recognition for CaseSeal using Apple Vision. No network access.'
   s.author         = ''
   s.homepage       = 'https://docs.expo.dev/modules/'
   s.platforms      = {
