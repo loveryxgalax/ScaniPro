@@ -2,6 +2,8 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
+import { AmbientGlow } from '@/components/Gradient';
+
 import { Card, EmptyState, Field, T } from '@/components/ui';
 import { toFtsQuery } from '@/lib/core/search';
 import { getDb } from '@/lib/db';
@@ -16,7 +18,7 @@ function Snippet({ text }: { text: string }) {
     <Text style={{ color: c.textMuted, fontSize: 14, lineHeight: 20 }} numberOfLines={3}>
       {parts.map((p, i) =>
         p.startsWith('[[') ? (
-          <Text key={i} style={{ color: c.text, fontWeight: '700', backgroundColor: c.warningSoft }}>{p.slice(2, -2)}</Text>
+          <Text key={i} style={{ color: c.text, fontWeight: '800', backgroundColor: c.primarySoft }}>{p.slice(2, -2)}</Text>
         ) : (
           <Text key={i}>{p}</Text>
         ),
@@ -51,8 +53,10 @@ export default function SearchScreen() {
   }, [match]);
 
   return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+    <AmbientGlow />
     <FlatList
-      style={{ flex: 1, backgroundColor: c.bg }}
+      style={{ flex: 1 }}
       contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={{ padding: space.lg, gap: space.md }}
@@ -79,5 +83,6 @@ export default function SearchScreen() {
         </Card>
       )}
     />
+    </View>
   );
 }

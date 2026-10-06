@@ -55,8 +55,8 @@ function PromptBody({
   const [value, setValue] = useState(initial ?? '');
   return (
     <>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, backgroundColor: '#0009', justifyContent: 'center', padding: space.xl }}>
-        <View style={{ backgroundColor: c.surface, borderRadius: radius.lg, padding: space.xl, gap: space.md }}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, backgroundColor: 'rgba(3,6,14,0.66)', justifyContent: 'center', padding: space.xl }}>
+        <View style={{ backgroundColor: c.surfaceStrong, borderRadius: radius.lg, padding: space.xl, gap: space.md, borderWidth: 1, borderColor: c.border }}>
           <T variant="heading">{title}</T>
           {message ? <T variant="caption">{message}</T> : null}
           <Field label="" value={value} onChangeText={setValue} autoFocus placeholder={placeholder} maxLength={120} onSubmitEditing={() => onSubmit(value)} returnKeyType="done" />

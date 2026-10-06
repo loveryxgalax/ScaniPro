@@ -126,7 +126,7 @@ export default function AnnotateScreen() {
 
       <View style={{ flex: 1, margin: space.lg, alignItems: 'center', justifyContent: 'center' }} onLayout={(e: LayoutChangeEvent) => setArea({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}>
         {canvas.w > 0 ? (
-          <View style={{ borderWidth: 1, borderColor: c.border, backgroundColor: '#fff' }}>
+          <View style={{ borderWidth: 1, borderColor: c.border, backgroundColor: c.paper, borderRadius: 6, overflow: 'hidden' }}>
             <DrawSurface
               width={canvas.w}
               height={canvas.h}
@@ -207,7 +207,7 @@ function SignaturePad({ visible, color, onCancel, onDone }: { visible: boolean; 
         <T variant="caption">Your signature is drawn into a new version of this exhibit. It is never stored separately or reused without you placing it.</T>
         <View onLayout={(e) => setW(e.nativeEvent.layout.width)} style={{ width: '100%' }}>
           {w > 0 ? (
-            <View style={{ backgroundColor: '#fff', borderRadius: radius.md, borderWidth: 1, borderColor: c.border, overflow: 'hidden' }}>
+            <View style={{ backgroundColor: c.paper, borderRadius: radius.md, borderWidth: 1, borderColor: c.border, overflow: 'hidden' }}>
               <DrawSurface width={w} height={h} color={color} strokeWidth={SIG_WIDTH * 2.5} enabled onStroke={(p) => setStrokes((s) => [...s, p])}>
                 <Svg width={w} height={h} style={{ position: 'absolute' }}>
                   <Path d={`M ${w * 0.06} ${h * 0.8} L ${w * 0.94} ${h * 0.8}`} stroke="#C9D0DB" strokeWidth={1} />

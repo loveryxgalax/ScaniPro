@@ -4,7 +4,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 
-import { Banner, Button, Card, Screen, T } from '@/components/ui';
+import { Banner, Button, Card, IconChip, Screen, T } from '@/components/ui';
 import { config } from '@/lib/config';
 import type { ProFeature } from '@/lib/core/limits';
 import { FREE_LIMITS } from '@/lib/core/limits';
@@ -61,10 +61,10 @@ export default function PaywallScreen() {
         }}
       />
       <View style={{ alignItems: 'center', gap: space.sm }}>
-        <View style={{ width: 72, height: 72, borderRadius: 20, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' }}>
-          <Ionicons name="shield-checkmark" size={38} color={c.primaryText} />
+        <View style={{ shadowColor: c.shadow, shadowOpacity: 0.7, shadowRadius: 30, shadowOffset: { width: 0, height: 10 } }}>
+          <IconChip icon="diamond" size={84} />
         </View>
-        <T variant="title" style={{ textAlign: 'center' }}>ScaniPro Pro</T>
+        <T variant="display" style={{ textAlign: 'center', marginTop: space.sm }}>ScaniPro Pro</T>
         <T variant="caption" style={{ textAlign: 'center', fontSize: 15 }}>One-time purchase. No subscription, no account.</T>
       </View>
 
@@ -73,8 +73,8 @@ export default function PaywallScreen() {
 
       <Card style={{ gap: space.lg }}>
         {BENEFITS.map(([icon, title, body]) => (
-          <View key={title} style={{ flexDirection: 'row', gap: space.md }}>
-            <Ionicons name={icon} size={22} color={c.primary} />
+          <View key={title} style={{ flexDirection: 'row', gap: space.md, alignItems: 'center' }}>
+            <IconChip icon={icon} size={40} />
             <View style={{ flex: 1 }}>
               <T variant="heading" style={{ fontSize: 16 }}>{title}</T>
               <T variant="caption">{body}</T>

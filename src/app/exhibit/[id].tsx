@@ -6,7 +6,7 @@ import { Alert, Image, Pressable, View, useWindowDimensions } from 'react-native
 
 import { AnnotationOverlay } from '@/components/AnnotationOverlay';
 import { PromptModal } from '@/components/PromptModal';
-import { Badge, Banner, Button, Card, Divider, EmptyState, HashText, IconButton, Loading, Screen, Segmented, T } from '@/components/ui';
+import { Badge, Banner, Button, Card, Divider, EmptyState, HashText, IconButton, IconChip, Loading, Screen, SealPill, Segmented, T } from '@/components/ui';
 import { useQuery } from '@/hooks/useQuery';
 import { annotationsForVersion } from '@/lib/annotations';
 import { confirm, showActionSheet } from '@/lib/actionSheet';
@@ -57,10 +57,8 @@ function CustodyEntryView({ row, last }: { row: CustodyRow; last: boolean }) {
     <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityHint="Shows full entry details">
       <View style={{ flexDirection: 'row', gap: space.md }}>
         <View style={{ alignItems: 'center' }}>
-          <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: bad ? c.dangerSoft : c.primarySoft, alignItems: 'center', justifyContent: 'center' }}>
-            <Ionicons name={ACTION_ICONS[row.action] ?? 'ellipse'} size={16} color={bad ? c.danger : c.primary} />
-          </View>
-          {!last ? <View style={{ width: 2, flex: 1, backgroundColor: c.border, marginVertical: 2 }} /> : null}
+          {bad ? <IconChip icon={ACTION_ICONS[row.action] ?? 'ellipse'} size={32} tone="danger" /> : <IconChip icon={ACTION_ICONS[row.action] ?? 'ellipse'} size={32} />}
+          {!last ? <View style={{ width: 2, flex: 1, backgroundColor: c.borderStrong, marginVertical: 3, borderRadius: 1 }} /> : null}
         </View>
         <View style={{ flex: 1, paddingBottom: space.lg, gap: 2 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -77,7 +75,7 @@ function CustodyEntryView({ row, last }: { row: CustodyRow; last: boolean }) {
               <HashText label="Previous entry hash" hash={row.prev_entry_hash} />
               <HashText label="This entry hash" hash={row.entry_hash} />
               <T variant="label">Details</T>
-              <View style={{ backgroundColor: c.surfaceAlt, borderRadius: radius.sm, padding: space.sm }}>
+              <View style={{ backgroundColor: c.surfaceAlt, borderRadius: radius.sm, padding: space.md, borderWidth: 1, borderColor: c.border }}>
                 <T variant="mono" selectable>{JSON.stringify(details, null, 2)}</T>
               </View>
             </View>
@@ -182,13 +180,13 @@ export default function ExhibitScreen() {
       <Screen>
         <View style={{ gap: space.sm }}>
           <Pressable onPress={() => setRenaming(true)} accessibilityRole="button" accessibilityHint="Rename this exhibit">
-            <T variant="title">{exhibit.title}</T>
+            <T variant="display">{exhibit.title}</T>
           </Pressable>
           <T variant="caption">
             {data.kase?.title} · captured {formatDateTime(exhibit.captured_at)} · {exhibit.page_count} page{exhibit.page_count > 1 ? 's' : ''}
           </T>
           <View style={{ flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' }}>
-            {chain.ok ? <Badge text="Custody chain intact" tone="success" icon="link" /> : <Badge text="Custody chain broken" tone="danger" icon="warning" />}
+            <SealPill ok={chain.ok} text={chain.ok ? 'Custody chain intact' : 'Custody chain broken'} />
             {processing ? <Badge text="Processing…" tone="primary" icon="hourglass-outline" /> : null}
             {selected ? <Badge text={versionLabel(selected)} tone={selected.kind === 'original' ? 'neutral' : 'warning'} /> : null}
           </View>
@@ -228,7 +226,7 @@ export default function ExhibitScreen() {
               const h = (imgW * p.height) / p.width;
               return (
                 <View key={p.id} style={{ gap: 6 }}>
-                  <View style={{ width: imgW, height: h, borderRadius: radius.sm, overflow: 'hidden', borderWidth: 1, borderColor: c.border, backgroundColor: '#fff' }}>
+                  <View style={{ width: imgW, height: h, borderRadius: radius.sm, overflow: 'hidden', borderWidth: 1, borderColor: c.border, backgroundColor: c.paper }}>
                     <Image source={{ uri: toAbsolute(p.original_path).uri }} style={{ width: imgW, height: h }} accessibilityLabel={`Page ${p.page_index + 1}`} />
                     <AnnotationOverlay annotations={annotations} pageIndex={p.page_index} width={imgW} height={h} />
                   </View>

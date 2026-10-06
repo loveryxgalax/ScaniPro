@@ -1,26 +1,26 @@
 /* Layout: single readable column, brand bar on top, serif headings like the app's packet cover. */
 :root {
   --bg: #F6F7F9; --surface: #FFFFFF; --ink: #111A28; --muted: #4E5969; --line: #DCE1E8;
-  --brand: #1C3F78; --brand-soft: #E3EBF7; --gold: #9C7A2E;
+  --brand: #4F5DF5; --brand-soft: rgba(79,93,245,.10); --gold: #7C3AED;
   --display: "Source Serif 4", Georgia, "Times New Roman", serif;
   --body: "IBM Plex Sans", -apple-system, "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0B1220; --surface: #131C2E; --ink: #E8EDF5; --muted: #A6B0C2; --line: #26324A; --brand: #8DB0EC; --brand-soft: #1B2B47; --gold: #D4B46A; color-scheme: dark; }
+  :root { --bg: #070B14; --surface: #111A2E; --ink: #E8EDF5; --muted: #A6B0C2; --line: #26324A; --brand: #9AABFF; --brand-soft: rgba(124,147,255,.16); --gold: #C4B5FD; color-scheme: dark; }
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.65 var(--body); }
 a { color: var(--brand); text-underline-offset: 3px; }
 a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
-.bar { background: #13284D; color: #fff; }
+.bar { background: linear-gradient(90deg, #0B1226, #1A1F4A); color: #fff; }
 .bar .in { max-width: 760px; margin: 0 auto; padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .bar img { width: 34px; height: 34px; border-radius: 8px; }
 .bar b { font: 600 18px var(--display); letter-spacing: .01em; }
 .bar nav { margin-left: auto; display: flex; gap: 18px; font-size: 14.5px; }
 .bar nav a { color: #DCE6F7; text-decoration: none; }
-.bar nav a[aria-current="page"] { color: #fff; text-decoration: underline; text-decoration-color: #D9BE7C; }
+.bar nav a[aria-current="page"] { color: #fff; text-decoration: underline; text-decoration-color: #9B5CF6; }
 main { max-width: 760px; margin: 0 auto; padding-block: 40px 64px; padding-inline: 20px; }
 h1 { font: 700 clamp(30px, 5vw, 42px)/1.12 var(--display); letter-spacing: -0.015em; margin: 0 0 10px; text-wrap: balance; }
 h2 { font: 600 23px/1.25 var(--display); margin: 38px 0 8px; text-wrap: balance; }

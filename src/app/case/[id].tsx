@@ -3,7 +3,8 @@ import { Stack, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Modal, View } from 'react-native';
 
-import { Badge, Button, Card, EmptyState, IconButton, Loading, T } from '@/components/ui';
+import { GradientFill, AmbientGlow } from '@/components/Gradient';
+import { Badge, Button, Card, EmptyState, HeroCard, IconButton, Loading, SealPill, Stat, T } from '@/components/ui';
 import { useQuery } from '@/hooks/useQuery';
 import { confirm, showActionSheet } from '@/lib/actionSheet';
 import { canAddExhibit, canUse } from '@/lib/core/limits';
@@ -21,9 +22,9 @@ import { useIsPro } from '@/lib/state/pro';
 import { radius, space, useTheme } from '@/theme';
 
 function OcrBadge({ item }: { item: ExhibitListItem }) {
-  if (item.ocr_status === 'done' && item.current_version_id) return <Badge text="Searchable" tone="success" icon="text" />;
-  if (item.ocr_status === 'failed') return <Badge text="No text found" tone="warning" icon="alert-circle-outline" />;
-  return <Badge text="Processing…" tone="primary" icon="hourglass-outline" />;
+  if (item.ocr_status === 'done' && item.current_version_id) return <SealPill text="Sealed · searchable" />;
+  if (item.ocr_status === 'failed') return <Badge text="Sealed · no text" tone="warning" icon="alert-circle-outline" />;
+  return <Badge text="Sealing…" tone="primary" icon="hourglass-outline" />;
 }
 
 export default function CaseScreen() {
@@ -92,8 +93,11 @@ export default function CaseScreen() {
       },
     ]);
 
+  const pageTotal = data.exhibits.reduce((n, e) => n + e.page_count, 0);
+
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+      <AmbientGlow />
       <Stack.Screen
         options={{
           title: kase.reference || 'Case',
@@ -101,22 +105,30 @@ export default function CaseScreen() {
         }}
       />
       <FlatList
-        style={{ flex: 1, backgroundColor: c.bg }}
+        style={{ flex: 1 }}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={{ padding: space.lg, gap: space.md, paddingBottom: 130 }}
         data={data.exhibits}
         keyExtractor={(e) => e.id}
         ListHeaderComponent={
           <View style={{ gap: space.md, marginBottom: space.sm }}>
-            <T variant="title">{kase.title}</T>
+            <T variant="display">{kase.title}</T>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
-              {kase.matter_date ? <Badge text={`Matter date ${formatDate(kase.matter_date)}`} icon="calendar-outline" /> : null}
-              <Badge text={`${data.exhibits.length} exhibits`} tone="primary" icon="documents-outline" />
+              {kase.reference ? <Badge text={kase.reference} icon="pricetag-outline" /> : null}
+              {kase.matter_date ? <Badge text={formatDate(kase.matter_date)} icon="calendar-outline" /> : null}
             </View>
             {kase.notes ? <T variant="caption">{kase.notes}</T> : null}
-            <View style={{ flexDirection: 'row', gap: space.md }}>
-              <Button title="Export Packet" icon="briefcase-outline" variant="secondary" onPress={exportPacket} style={{ flex: 1 }} />
-            </View>
+            {data.exhibits.length ? (
+              <HeroCard>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Stat value={data.exhibits.length} label="Exhibits" />
+                  <Stat value={pageTotal} label="Pages" />
+                  <Stat value={data.exhibits.filter((e) => e.current_version_id).length} label="Sealed PDFs" />
+                </View>
+              </HeroCard>
+            ) : null}
+            <Button title="Export Evidence Packet" icon="briefcase" variant="secondary" onPress={exportPacket} />
+            {data.exhibits.length ? <T variant="label" style={{ marginTop: space.sm }}>Exhibits</T> : null}
           </View>
         }
         ListEmptyComponent={
@@ -129,15 +141,16 @@ export default function CaseScreen() {
         renderItem={({ item }) => (
           <Card onPress={() => router.push({ pathname: '/exhibit/[id]', params: { id: item.id } })} style={{ padding: space.md }}>
             <View style={{ flexDirection: 'row', gap: space.md }}>
-              <View style={{ width: 64, height: 84, borderRadius: radius.sm, overflow: 'hidden', backgroundColor: c.surfaceAlt, borderWidth: 1, borderColor: c.border }}>
+              <View style={{ width: 70, height: 92, borderRadius: radius.sm, overflow: 'hidden', backgroundColor: c.paper, borderWidth: 1, borderColor: c.border }}>
                 {item.first_page_path ? (
                   <Image source={{ uri: toAbsolute(item.first_page_path).uri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
                 ) : null}
               </View>
               <View style={{ flex: 1, gap: 5 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-                  <View style={{ backgroundColor: c.primary, borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2 }}>
-                    <T style={{ color: c.primaryText, fontWeight: '700', fontSize: 12 }}>EX. {item.number}</T>
+                  <View style={{ borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, overflow: 'hidden' }}>
+                    <GradientFill angle="horizontal" />
+                    <T style={{ color: '#FFFFFF', fontWeight: '800', fontSize: 11.5, letterSpacing: 0.6 }}>EX {item.number}</T>
                   </View>
                   {item.current_version && item.current_version > 1 ? <Badge text={`v${item.current_version}`} tone="warning" icon="create-outline" /> : null}
                 </View>
@@ -152,12 +165,12 @@ export default function CaseScreen() {
           </Card>
         )}
       />
-      <View style={{ position: 'absolute', left: space.lg, right: space.lg, bottom: 34 }}>
+      <View style={{ position: 'absolute', left: space.xl, right: space.xl, bottom: 34 }}>
         <Button title="Scan Exhibit" icon="scan" onPress={scan} accessibilityHint="Opens the document camera" />
       </View>
       <Modal visible={!!busy} transparent animationType="fade">
-        <View style={{ flex: 1, backgroundColor: '#0008', alignItems: 'center', justifyContent: 'center' }}>
-          <View style={{ backgroundColor: c.surface, borderRadius: radius.lg, padding: space.xl, alignItems: 'center', gap: space.md, minWidth: 220 }}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(3,6,14,0.62)', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ backgroundColor: c.surfaceStrong, borderRadius: radius.lg, padding: space.xl, alignItems: 'center', gap: space.md, minWidth: 240, borderWidth: 1, borderColor: c.border }}>
             <ActivityIndicator color={c.primary} />
             <T variant="heading">{busy}</T>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -167,6 +180,6 @@ export default function CaseScreen() {
           </View>
         </View>
       </Modal>
-    </>
+    </View>
   );
 }

@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AppState, StyleSheet, View, type AppStateStatus } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { lockNow, lockStore, unlock } from '@/lib/state/lock';
 import { space, useTheme } from '@/theme';
 
-import { Banner, Button, T } from './ui';
+import { AmbientGlow } from './Gradient';
+import { Banner, Button, IconChip, T } from './ui';
 
 /**
  * Renders the app behind a Face ID / passcode gate and hides content in the
@@ -52,15 +52,16 @@ export function LockGate({ children }: { children: ReactNode }) {
       {children}
       {showLock || showCover ? (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center', padding: space.xl, paddingTop: insets.top }]}>
-          <View style={{ width: 88, height: 88, borderRadius: 24, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center', marginBottom: space.lg }}>
-            <Ionicons name="shield-checkmark" size={46} color={c.primaryText} />
+          <AmbientGlow height={700} />
+          <View style={{ marginBottom: space.xl, shadowColor: c.shadow, shadowOpacity: 0.7, shadowRadius: 36, shadowOffset: { width: 0, height: 12 } }}>
+            <IconChip icon="shield-checkmark" size={104} />
           </View>
-          <T variant="title">ScaniPro</T>
-          <T variant="caption" style={{ marginTop: 6, textAlign: 'center' }}>
+          <T variant="display">ScaniPro</T>
+          <T variant="caption" style={{ marginTop: 8, textAlign: 'center', fontSize: 15, lineHeight: 22, maxWidth: 280 }}>
             Your case files are locked. Everything stays on this iPhone.
           </T>
           {showLock ? (
-            <View style={{ width: '100%', marginTop: space.xxl, gap: space.md }}>
+            <View style={{ position: 'absolute', left: space.xl, right: space.xl, bottom: insets.bottom + 40, gap: space.md }}>
               {error ? <Banner tone="danger" icon="alert-circle" title={error} /> : null}
               <Button
                 title={`Unlock with ${biometryLabel}`}

@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
-import { Card, Screen, T } from '@/components/ui';
-import { space, useTheme } from '@/theme';
+import { Card, IconChip, Screen, T } from '@/components/ui';
+import { space } from '@/theme';
 
 const SECTIONS: [keyof typeof Ionicons.glyphMap, string, string][] = [
   ['camera-outline', 'Sealed at capture', 'The moment you finish a scan, every page image is written to the app\'s protected storage, re-read, and fingerprinted with SHA-256. The ordered list of page fingerprints is hashed again into a single capture digest for the exhibit.'],
@@ -15,7 +15,6 @@ const SECTIONS: [keyof typeof Ionicons.glyphMap, string, string][] = [
 ];
 
 export default function IntegrityScreen() {
-  const c = useTheme();
   return (
     <Screen>
       <T variant="caption" style={{ fontSize: 15 }}>
@@ -23,7 +22,7 @@ export default function IntegrityScreen() {
       </T>
       {SECTIONS.map(([icon, title, body]) => (
         <Card key={title} style={{ flexDirection: 'row', gap: space.md }}>
-          <Ionicons name={icon} size={24} color={c.primary} />
+          <IconChip icon={icon} size={42} />
           <View style={{ flex: 1, gap: 4 }}>
             <T variant="heading">{title}</T>
             <T variant="caption" style={{ fontSize: 14, lineHeight: 20 }}>{body}</T>

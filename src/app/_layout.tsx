@@ -2,7 +2,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import { Platform, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { LockGate } from '@/components/LockGate';
@@ -64,11 +64,15 @@ export default function RootLayout() {
         <LockGate>
           <Stack
             screenOptions={{
-              headerTintColor: c.primary,
-              headerTitleStyle: { color: c.text },
-              headerLargeTitleStyle: { color: c.text },
+              headerTintColor: c.text,
+              headerTitleStyle: { color: c.text, fontWeight: '700' },
+              headerLargeTitleStyle: { color: c.text, fontWeight: '800' },
               headerShadowVisible: false,
-              headerStyle: { backgroundColor: c.bg },
+              headerLargeTitleShadowVisible: false,
+              // iOS: frosted glass header floating over the ambient glow.
+              headerTransparent: Platform.OS === 'ios',
+              headerBlurEffect: scheme === 'dark' ? 'systemChromeMaterialDark' : 'systemChromeMaterialLight',
+              headerStyle: Platform.OS === 'ios' ? undefined : { backgroundColor: c.bg },
               contentStyle: { backgroundColor: c.bg },
               headerBackButtonDisplayMode: 'minimal',
             }}
