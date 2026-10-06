@@ -71,3 +71,17 @@ export function searchAll(db: SQLiteDatabase, match: string, limit = 50) {
     limit,
   );
 }
+
+export function listTrash(db: SQLiteDatabase) {
+  return db.getAllAsync<ExhibitRow & { case_title: string }>(
+    `SELECT e.*, c.title AS case_title FROM exhibits e JOIN cases c ON c.id = e.case_id
+     WHERE e.deleted_at IS NOT NULL AND e.purged_at IS NULL ORDER BY e.deleted_at DESC`,
+  );
+}
+
+export function listAllActiveExhibits(db: SQLiteDatabase) {
+  return db.getAllAsync<ExhibitRow & { case_title: string }>(
+    `SELECT e.*, c.title AS case_title FROM exhibits e JOIN cases c ON c.id = e.case_id
+     WHERE e.deleted_at IS NULL ORDER BY c.updated_at DESC, e.number ASC`,
+  );
+}

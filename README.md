@@ -18,6 +18,8 @@ A privacy-first, evidence-grade document scanner for iPhone. Every scan becomes 
 | Integrity | Verify re-hashes every original page and version file and re-walks the custody chain; the result is logged |
 | Derived versions | Signatures, ink and text notes create a new PDF version with its own hash and a provenance footer, linked to its parent. Originals are immutable |
 | Evidence packet | Cover page, exhibit index, stamped exhibits (header + page-numbered footer), hash manifest page, optional embedded exhibit files; manifest as CSV and JSON; ZIP bundle with README |
+| Tools hub | Document / book / text-only scan, QR reader, import from Photos and Files (PDFs kept byte-for-byte), export to .txt / .jpg / .docx / .pptx, merge exhibits into one PDF, expense reports from receipts (PDF + CSV), verify a whole case |
+| Recently Deleted | Withdrawn exhibits are kept 30 days and can be restored (custody: deleted → restored / purged) |
 | App lock | Face ID/Touch ID/passcode, re-lock interval, content hidden in app switcher |
 | Pro (one-time IAP) | Free: 1 case, 5 exhibits. Pro: unlimited, packet export, signatures. StoreKit 2 via `expo-iap` with pending/Ask to Buy, restore, and price-load failure handling |
 
@@ -31,14 +33,14 @@ A privacy-first, evidence-grade document scanner for iPhone. Every scan becomes 
 
 ## Tech stack
 
-Expo SDK 57 · Expo Router (typed routes) · TypeScript strict · expo-sqlite (FTS5) · expo-file-system · expo-crypto · expo-secure-store · expo-local-authentication · expo-sharing · expo-iap · react-native-document-scanner-plugin · pdf-lib · react-native-svg. Development builds only (native modules don't run in Expo Go).
+Expo SDK 57 · Expo Router (typed routes) · TypeScript strict · expo-sqlite (FTS5) · expo-file-system · expo-crypto · expo-secure-store · expo-local-authentication · expo-sharing · expo-iap · expo-camera (QR) · expo-image-picker · expo-document-picker · expo-image-manipulator · react-native-document-scanner-plugin · pdf-lib · react-native-svg. Development builds only (native modules don't run in Expo Go).
 
 ## Project layout
 
 ```
 src/app/                 Expo Router screens (cases, case/[id], exhibit/[id], exhibit/annotate, export/[caseId], search, settings, paywall, integrity)
 src/components/          UI primitives, LockGate, drawing surface, annotation overlay
-src/lib/core/            Pure, unit-tested logic: custody chain, searchable PDF, annotations, packet PDF, manifests, ZIP, limits, FTS query
+src/lib/core/            Pure, unit-tested logic: custody chain, searchable PDF, annotations, packet PDF, manifests, ZIP, DOCX/PPTX writers, receipt parser, expense report, merge, limits, FTS query
 src/lib/db/              SQLite schema/migrations (append-only triggers), queries, custody writer
 src/lib/platform/        Device adapters: files, hashing, device info, OCR, scanner
 src/lib/services/        Workflows: capture & processing, exhibits (rename/verify/derive/share/withdraw), cases, packet export
@@ -91,7 +93,9 @@ Regenerate store art after UI changes: `node scripts/render-store-assets.mjs` (n
 | Scan, OCR, search, hashes, custody log, verify, share PDF | ✓ | ✓ |
 | Evidence packet export (PDF + CSV + JSON + ZIP) | | ✓ |
 | Signatures & annotations | | ✓ |
+| .docx / .pptx export, merge PDFs, expense reports | | ✓ |
+| Text/image export, QR, scan to text, import, Recently Deleted | ✓ | ✓ |
 
 ## Out of scope
 
-Cloud sync, Word/PowerPoint export, fax, PDF passwords.
+Cloud sync, fax, translation, AR measuring and PDF passwords. Fax and cloud sync would need a server, which breaks the on-device promise.

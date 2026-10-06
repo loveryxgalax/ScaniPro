@@ -13,7 +13,9 @@ export type CaseRow = {
 
 export type CaseSummary = CaseRow & { exhibit_count: number; page_count: number; last_activity: string | null };
 
-export type OcrStatus = 'pending' | 'running' | 'done' | 'failed';
+export type OcrStatus = 'pending' | 'running' | 'done' | 'failed' | 'skipped';
+export type ExhibitSource = 'scan' | 'book' | 'photos' | 'files';
+export type ExhibitKind = 'pages' | 'pdf';
 
 export type ExhibitRow = {
   id: string;
@@ -25,7 +27,10 @@ export type ExhibitRow = {
   capture_digest: string;
   current_version_id: string | null;
   ocr_status: OcrStatus;
+  source: ExhibitSource;
+  kind: ExhibitKind;
   deleted_at: string | null;
+  purged_at: string | null;
   created_at: string;
   updated_at: string;
 };

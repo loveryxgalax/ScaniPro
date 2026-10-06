@@ -1,27 +1,27 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Image, Modal, View } from 'react-native';
+import { Alert, FlatList, Image, View } from 'react-native';
 
 import { GradientFill, AmbientGlow } from '@/components/Gradient';
+import { BusyModal } from '@/components/BusyModal';
 import { Badge, Button, Card, EmptyState, HeroCard, IconButton, Loading, SealPill, Stat, T } from '@/components/ui';
+import { useCapture } from '@/hooks/useCapture';
 import { useQuery } from '@/hooks/useQuery';
 import { confirm, showActionSheet } from '@/lib/actionSheet';
-import { canAddExhibit, canUse } from '@/lib/core/limits';
+import { canUse } from '@/lib/core/limits';
 import { shortHash } from '@/lib/core/text';
 import { getDb } from '@/lib/db';
-import { countActive, getCase, listExhibits } from '@/lib/db/queries';
+import { getCase, listExhibits } from '@/lib/db/queries';
 import type { ExhibitListItem } from '@/lib/db/types';
 import { formatDate, formatDateTime } from '@/lib/format';
 import { passGate } from '@/lib/gates';
 import { toAbsolute } from '@/lib/platform/files';
-import { scanPages } from '@/lib/platform/scanner';
-import { captureExhibit } from '@/lib/services/capture';
 import { deleteCase } from '@/lib/services/cases';
 import { useIsPro } from '@/lib/state/pro';
 import { radius, space, useTheme } from '@/theme';
 
 function OcrBadge({ item }: { item: ExhibitListItem }) {
+  if (item.kind === 'pdf') return <SealPill text="Sealed · imported PDF" />;
   if (item.ocr_status === 'done' && item.current_version_id) return <SealPill text="Sealed · searchable" />;
   if (item.ocr_status === 'failed') return <Badge text="Sealed · no text" tone="warning" icon="alert-circle-outline" />;
   return <Badge text="Sealing…" tone="primary" icon="hourglass-outline" />;
@@ -31,11 +31,11 @@ export default function CaseScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const c = useTheme();
   const isPro = useIsPro();
-  const [busy, setBusy] = useState<string | null>(null);
+  const capture = useCapture();
   const { data, loading } = useQuery(async () => {
     const db = await getDb();
-    const [kase, exhibits, counts] = await Promise.all([getCase(db, id), listExhibits(db, id), countActive(db)]);
-    return { kase, exhibits, counts };
+    const [kase, exhibits] = await Promise.all([getCase(db, id), listExhibits(db, id)]);
+    return { kase, exhibits };
   }, [id]);
 
   if (loading && !data) return <Loading />;
@@ -44,26 +44,12 @@ export default function CaseScreen() {
     return <EmptyState icon="alert-circle-outline" title="Case not found" body="It may have been deleted." />;
   }
 
-  const scan = async () => {
-    if (!passGate(canAddExhibit(isPro, data.counts.exhibits))) return;
-    let uris: string[] | null = null;
-    try {
-      uris = await scanPages();
-    } catch (e) {
-      Alert.alert('Scanner unavailable', `${(e as Error).message}\n\nCheck that ScaniPro has camera access in iOS Settings.`);
-      return;
-    }
-    if (!uris) return;
-    setBusy(`Sealing ${uris.length} page${uris.length > 1 ? 's' : ''}…`);
-    try {
-      const exhibitId = await captureExhibit(kase.id, uris);
-      router.push({ pathname: '/exhibit/[id]', params: { id: exhibitId } });
-    } catch (e) {
-      Alert.alert('Capture failed', (e as Error).message);
-    } finally {
-      setBusy(null);
-    }
-  };
+  const addMenu = () =>
+    showActionSheet('Add exhibit', [
+      { label: 'Scan Book (split pages)', onPress: () => void capture.start('book', kase.id) },
+      { label: 'Import from Photos', onPress: () => void capture.start('photos', kase.id) },
+      { label: 'Import from Files (PDF or images)', onPress: () => void capture.start('files', kase.id) },
+    ]);
 
   const exportPacket = () => {
     if (!data.exhibits.length) {
@@ -144,7 +130,12 @@ export default function CaseScreen() {
               <View style={{ width: 70, height: 92, borderRadius: radius.sm, overflow: 'hidden', backgroundColor: c.paper, borderWidth: 1, borderColor: c.border }}>
                 {item.first_page_path ? (
                   <Image source={{ uri: toAbsolute(item.first_page_path).uri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
-                ) : null}
+                ) : (
+                  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                    <Ionicons name="document-text" size={28} color="#5B6478" />
+                    <T style={{ fontSize: 10, fontWeight: '800', color: '#5B6478' }}>PDF</T>
+                  </View>
+                )}
               </View>
               <View style={{ flex: 1, gap: 5 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
@@ -165,21 +156,11 @@ export default function CaseScreen() {
           </Card>
         )}
       />
-      <View style={{ position: 'absolute', left: space.xl, right: space.xl, bottom: 34 }}>
-        <Button title="Scan Exhibit" icon="scan" onPress={scan} accessibilityHint="Opens the document camera" />
+      <View style={{ position: 'absolute', left: space.xl, right: space.xl, bottom: 34, flexDirection: 'row', gap: space.md, alignItems: 'center' }}>
+        <Button title="Scan Exhibit" icon="scan" onPress={() => void capture.start('scan', kase.id)} accessibilityHint="Opens the document camera" style={{ flex: 1 }} />
+        <IconButton icon="add" label="More ways to add an exhibit" onPress={addMenu} />
       </View>
-      <Modal visible={!!busy} transparent animationType="fade">
-        <View style={{ flex: 1, backgroundColor: 'rgba(3,6,14,0.62)', alignItems: 'center', justifyContent: 'center' }}>
-          <View style={{ backgroundColor: c.surfaceStrong, borderRadius: radius.lg, padding: space.xl, alignItems: 'center', gap: space.md, minWidth: 240, borderWidth: 1, borderColor: c.border }}>
-            <ActivityIndicator color={c.primary} />
-            <T variant="heading">{busy}</T>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Ionicons name="finger-print" size={14} color={c.textMuted} />
-              <T variant="caption">Computing SHA-256 on device</T>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <BusyModal label={capture.busy} />
     </View>
   );
 }

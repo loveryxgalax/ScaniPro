@@ -118,4 +118,10 @@ export const MIGRATIONS: string[] = [
     tokenize = 'porter unicode61 remove_diacritics 2'
   );
   `,
+  `
+  ALTER TABLE exhibits ADD COLUMN source TEXT NOT NULL DEFAULT 'scan';
+  ALTER TABLE exhibits ADD COLUMN kind TEXT NOT NULL DEFAULT 'pages';
+  ALTER TABLE exhibits ADD COLUMN purged_at TEXT;
+  CREATE TABLE prefs (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);
+  `,
 ];

@@ -16,7 +16,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NSCameraUsageDescription": "ScaniPro uses the camera only to scan documents you choose. Scans are processed and stored on this iPhone and are never uploaded.",
+        "NSCameraUsageDescription": "ScaniPro uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
         "NSFaceIDUsageDescription": "ScaniPro uses Face ID to lock your case files. Face ID data stays with iOS and is never accessible to ScaniPro."
       },
       "entitlements": {
@@ -101,7 +101,7 @@
       [
         "react-native-document-scanner-plugin",
         {
-          "cameraPermission": "ScaniPro uses the camera only to scan documents you choose. Scans are processed and stored on this iPhone and are never uploaded."
+          "cameraPermission": "ScaniPro uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded."
         }
       ],
       [
@@ -113,7 +113,24 @@
       "expo-secure-store",
       "expo-font",
       "expo-web-browser",
-      "expo-iap"
+      "expo-iap",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "ScaniPro uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "ScaniPro opens your photo library only when you choose photos to import as evidence. Imported photos stay on this iPhone.",
+          "cameraPermission": "ScaniPro uses the camera only to scan documents and QR codes you choose. Scans are processed and stored on this iPhone and are never uploaded.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

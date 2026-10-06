@@ -16,6 +16,9 @@ const REASONS: Record<ProFeature, string> = {
   unlimited_exhibits: `The free version includes ${FREE_LIMITS.exhibits} exhibits.`,
   packet_export: 'Evidence packet export is a Pro feature.',
   signatures: 'Signatures and annotations are Pro features.',
+  office_export: 'Word and PowerPoint export are Pro features.',
+  merge: 'Merging exhibits into one PDF is a Pro feature.',
+  expense_report: 'Expense reports are a Pro feature.',
 };
 
 const BENEFITS: [keyof typeof Ionicons.glyphMap, string, string][] = [
@@ -23,6 +26,8 @@ const BENEFITS: [keyof typeof Ionicons.glyphMap, string, string][] = [
   ['documents', 'Unlimited exhibits', 'Scan every page of every record.'],
   ['albums', 'Evidence packet export', 'Cover page, exhibit index, stamped exhibits, hash manifest, CSV and JSON.'],
   ['create', 'Signatures & annotations', 'Saved as linked versions. The original stays untouched.'],
+  ['document-text', 'Word, PowerPoint & merged PDFs', 'Export exhibits as .docx or .pptx, or combine several into one PDF.'],
+  ['receipt', 'Expense reports', 'Totals read from your receipts, exported as PDF and CSV.'],
 ];
 
 export default function PaywallScreen() {

@@ -31,7 +31,10 @@ export type CustodyAction =
   | 'shared'
   | 'verified'
   | 'verification_failed'
-  | 'deleted';
+  | 'deleted'
+  | 'imported'
+  | 'restored'
+  | 'purged';
 
 /** Point in normalised page space (0..1, top-left origin). */
 export type NormPoint = [number, number];

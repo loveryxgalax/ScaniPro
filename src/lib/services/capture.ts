@@ -8,7 +8,7 @@ import type { OcrLine } from '../core/types';
 import { getDb } from '../db';
 import { appendCustody } from '../db/custody';
 import { getExhibit, listPages } from '../db/queries';
-import type { ExhibitRow } from '../db/types';
+import type { ExhibitRow, ExhibitSource } from '../db/types';
 import { notifyDataChanged } from '../events';
 import { deviceContext } from '../platform/device';
 import {
@@ -21,6 +21,7 @@ import {
   writeBytes,
 } from '../platform/files';
 import { sha256 } from '../platform/hash';
+import { isJpeg } from '../platform/images';
 import { recognizePage } from '../platform/ocr';
 import { Platform } from 'react-native';
 
@@ -31,17 +32,41 @@ type CapturedPage = { id: string; index: number; rel: string; sha256: string; wi
  * exact bytes written to disk, re-read to confirm, and sealed into the first
  * custody entry before anything else happens.
  */
-export async function captureExhibit(caseId: string, scannedUris: string[], title?: string): Promise<string> {
+type Provenance = { name: string; sha256: string; bytes: number; converted: boolean; rel: string };
+
+export type SourceFile = { uri: string; name: string; converted: boolean };
+
+export type CaptureOptions = {
+  title?: string;
+  source?: ExhibitSource;
+  /** Original files the pages were derived from (imports, book spreads); hashed and kept. */
+  sources?: SourceFile[];
+  /** Delete the page URIs after sealing (true for scanner temp files). */
+  cleanup?: boolean;
+};
+
+export async function captureExhibit(caseId: string, scannedUris: string[], options: CaptureOptions = {}): Promise<string> {
+  const { title, source = 'scan', sources = [], cleanup = true } = options;
   if (!scannedUris.length) throw new Error('No pages were scanned.');
   const db = await getDb();
   const exhibitId = randomUUID();
   const capturedAt = new Date().toISOString();
   const dir = exhibitDir(caseId, exhibitId);
   const pages: CapturedPage[] = [];
+  const provenance: Provenance[] = [];
 
   try {
+    for (let i = 0; i < sources.length; i++) {
+      const src = sources[i] as SourceFile;
+      const bytes = await readExternal(src.uri);
+      const ext = (src.name.split('.').pop() ?? 'bin').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'bin';
+      const rel = `${dir}/source/source-${padExhibitNumber(i + 1)}.${ext}`;
+      writeBytes(rel, bytes);
+      provenance.push({ name: src.name, sha256: await sha256(bytes), bytes: bytes.length, converted: src.converted, rel });
+    }
     for (let i = 0; i < scannedUris.length; i++) {
       const bytes = await readExternal(scannedUris[i] as string);
+      if (!isJpeg(bytes)) throw new Error(`Page ${i + 1} is not a JPEG image.`);
       const { width, height } = jpegSize(bytes);
       const hash = await sha256(bytes);
       const rel = `${dir}/original/page-${padExhibitNumber(i + 1)}.jpg`;
@@ -65,8 +90,8 @@ export async function captureExhibit(caseId: string, scannedUris: string[], titl
       const finalTitle = title?.trim() || `Exhibit ${number}`;
       await tx.runAsync('UPDATE cases SET next_exhibit_number = ?, updated_at = ? WHERE id = ?', number + 1, capturedAt, caseId);
       await tx.runAsync(
-        `INSERT INTO exhibits (id, case_id, number, title, page_count, captured_at, capture_digest, ocr_status, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)`,
+        `INSERT INTO exhibits (id, case_id, number, title, page_count, captured_at, capture_digest, ocr_status, source, kind, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'pages', ?, ?)`,
         exhibitId,
         caseId,
         number,
@@ -74,6 +99,7 @@ export async function captureExhibit(caseId: string, scannedUris: string[], titl
         pages.length,
         capturedAt,
         digest,
+        source,
         capturedAt,
         capturedAt,
       );
@@ -99,10 +125,11 @@ export async function captureExhibit(caseId: string, scannedUris: string[], titl
           p.index,
         );
       }
+      const camera = Platform.OS === 'ios' ? 'VisionKit document camera' : 'ML Kit document scanner';
       await appendCustody(tx, {
         exhibitId,
         caseId,
-        action: 'captured',
+        action: source === 'photos' || source === 'files' ? 'imported' : 'captured',
         fileSha256: digest,
         timestamp: capturedAt,
         details: {
@@ -110,7 +137,10 @@ export async function captureExhibit(caseId: string, scannedUris: string[], titl
           title: finalTitle,
           pageCount: pages.length,
           pageSha256: pages.map((p) => p.sha256),
-          source: Platform.OS === 'ios' ? 'VisionKit document camera' : 'ML Kit document scanner',
+          source: { scan: camera, book: `${camera} (book mode: spreads split into pages)`, photos: 'Photo library', files: 'Files' }[source],
+          ...(provenance.length
+            ? { sourceFiles: provenance.map((f) => ({ name: f.name, sha256: f.sha256, bytes: f.bytes, convertedToJpeg: f.converted, storedAs: f.rel })) }
+            : {}),
         },
       });
     });
@@ -118,7 +148,7 @@ export async function captureExhibit(caseId: string, scannedUris: string[], titl
     deleteTree(dir);
     throw e;
   } finally {
-    scannedUris.forEach(deleteExternal);
+    if (cleanup) scannedUris.forEach(deleteExternal);
   }
 
   notifyDataChanged();
@@ -142,7 +172,7 @@ export function enqueueProcessing(exhibitId: string) {
 export async function resumePendingProcessing() {
   const db = await getDb();
   const rows = await db.getAllAsync<{ id: string }>(
-    "SELECT id FROM exhibits WHERE deleted_at IS NULL AND (ocr_status IN ('pending', 'running') OR current_version_id IS NULL)",
+    "SELECT id FROM exhibits WHERE deleted_at IS NULL AND kind = 'pages' AND (ocr_status IN ('pending', 'running') OR current_version_id IS NULL)",
   );
   rows.forEach((r) => enqueueProcessing(r.id));
 }
@@ -157,7 +187,7 @@ async function setStatus(id: string, status: ExhibitRow['ocr_status']) {
 export async function processExhibit(exhibitId: string) {
   const db = await getDb();
   const exhibit = await getExhibit(db, exhibitId);
-  if (!exhibit || exhibit.deleted_at) return;
+  if (!exhibit || exhibit.deleted_at || exhibit.kind !== 'pages') return;
   const pages = await listPages(db, exhibitId);
 
   if (exhibit.ocr_status !== 'done' && exhibit.ocr_status !== 'failed') {

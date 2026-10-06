@@ -8,7 +8,7 @@ Guidance for AI agents working in this repo. Also read `AGENTS.md` (Expo's gener
 2. **App Privacy label is "Data Not Collected"** and `app.json → ios.privacyManifests.NSPrivacyCollectedDataTypes` stays empty.
 3. **Originals are immutable.** Never write to `pages.original_path` files or `versions` files after creation (`writeBytes` refuses to overwrite). Changes produce a new `versions` row (kind `derived`) with `parent_version_id`.
 4. **Custody log is append-only and hash-chained.** Only add entries through `appendCustody()` inside `db.withExclusiveTransactionAsync`. Never UPDATE/DELETE `custody_log`; the only exception is full case/data purge, which toggles `purge_guard`. Any user-visible action on an exhibit must append an entry with the SHA-256 of the file after the action.
-5. **Exhibit numbers are never reused.** Withdrawal is a soft delete plus a `deleted` custody entry.
+5. **Exhibit numbers are never reused.** Withdrawal moves an exhibit to Recently Deleted (`deleted` entry, files kept 30 days); `restored` or `purged` entries close it out. Imported originals (photos, files, book spreads) are kept under `source/` and listed with their hashes in the first custody entry.
 6. **Hash what's on disk.** Hash bytes read back from storage, and re-verify before deriving or exporting.
 7. SQL migrations in `src/lib/db/schema.ts` are append-only; never edit a shipped migration.
 

@@ -6,7 +6,7 @@ import { captureDigest } from '../core/custody';
 import { padExhibitNumber, safeFileName } from '../core/text';
 import type { Annotation } from '../core/types';
 import { getDb } from '../db';
-import { appendCustody, verifyCustody } from '../db/custody';
+import { appendCustody, listCustody, verifyCustody } from '../db/custody';
 import { getExhibit, getVersion, listPages, listVersions } from '../db/queries';
 import type { ExhibitRow, VersionRow } from '../db/types';
 import { notifyDataChanged } from '../events';
@@ -57,27 +57,71 @@ export async function renameExhibit(id: string, title: string) {
   notifyDataChanged();
 }
 
+export const TRASH_DAYS = 30;
+
 /**
- * Withdraws an exhibit: files are deleted, but the exhibit number is never
- * reused and its custody history (with hashes) is kept and closed out.
+ * Moves an exhibit to Recently Deleted. Files are kept for 30 days so it can
+ * be restored; the exhibit number is never reused either way.
  */
 export async function withdrawExhibit(id: string, reason: string) {
   const ex = await requireExhibit(id);
   const db = await getDb();
   const fileSha256 = await currentHash(ex);
+  const now = new Date();
+  const until = new Date(now.getTime() + TRASH_DAYS * 86400000).toISOString();
   await db.withExclusiveTransactionAsync(async (tx) => {
     await appendCustody(tx, {
       exhibitId: id,
       caseId: ex.case_id,
       action: 'deleted',
       fileSha256,
-      details: { reason: reason.trim() || 'Withdrawn by user', filesRemoved: true },
+      details: { reason: reason.trim() || 'Withdrawn by user', recoverableUntil: until },
     });
-    await tx.runAsync('UPDATE exhibits SET deleted_at = ?, updated_at = ? WHERE id = ?', new Date().toISOString(), new Date().toISOString(), id);
+    await tx.runAsync('UPDATE exhibits SET deleted_at = ?, updated_at = ? WHERE id = ?', now.toISOString(), now.toISOString(), id);
     await tx.runAsync('DELETE FROM search_index WHERE exhibit_id = ?', id);
+  });
+  notifyDataChanged();
+}
+
+export async function restoreExhibit(id: string) {
+  const db = await getDb();
+  const ex = await getExhibit(db, id);
+  if (!ex || !ex.deleted_at || ex.purged_at) throw new Error('This exhibit can no longer be restored.');
+  const pages = await listPages(db, id);
+  const fileSha256 = await currentHash(ex);
+  await db.withExclusiveTransactionAsync(async (tx) => {
+    await tx.runAsync('UPDATE exhibits SET deleted_at = NULL, updated_at = ? WHERE id = ?', new Date().toISOString(), id);
+    if (pages.length) {
+      for (const p of pages) {
+        await tx.runAsync('INSERT INTO search_index (title, body, exhibit_id, case_id, page_index) VALUES (?, ?, ?, ?, ?)', ex.title, p.ocr_text ?? '', id, ex.case_id, p.page_index);
+      }
+    } else {
+      await tx.runAsync('INSERT INTO search_index (title, body, exhibit_id, case_id, page_index) VALUES (?, ?, ?, ?, 0)', ex.title, '', id, ex.case_id);
+    }
+    await appendCustody(tx, { exhibitId: id, caseId: ex.case_id, action: 'restored', fileSha256, details: { from: 'Recently Deleted' } });
+  });
+  notifyDataChanged();
+}
+
+/** Deletes the files for good. The custody history (with hashes) is kept and closed. */
+export async function purgeExhibit(id: string) {
+  const db = await getDb();
+  const ex = await getExhibit(db, id);
+  if (!ex || !ex.deleted_at || ex.purged_at) return;
+  const fileSha256 = await currentHash(ex);
+  await db.withExclusiveTransactionAsync(async (tx) => {
+    await appendCustody(tx, { exhibitId: id, caseId: ex.case_id, action: 'purged', fileSha256, details: { filesRemoved: true } });
+    await tx.runAsync('UPDATE exhibits SET purged_at = ? WHERE id = ?', new Date().toISOString(), id);
   });
   deleteTree(exhibitDir(ex.case_id, id));
   notifyDataChanged();
+}
+
+export async function purgeExpired() {
+  const db = await getDb();
+  const cutoff = new Date(Date.now() - TRASH_DAYS * 86400000).toISOString();
+  const rows = await db.getAllAsync<{ id: string }>('SELECT id FROM exhibits WHERE deleted_at IS NOT NULL AND purged_at IS NULL AND deleted_at < ?', cutoff);
+  for (const r of rows) await purgeExhibit(r.id);
 }
 
 export type VerificationReport = {
@@ -86,6 +130,7 @@ export type VerificationReport = {
   pages: { index: number; expected: string; actual: string | null; ok: boolean }[];
   captureDigestOk: boolean;
   versions: { version: number; expected: string; actual: string | null; ok: boolean }[];
+  sources: { name: string; expected: string; actual: string | null; ok: boolean }[];
   custody: Awaited<ReturnType<typeof verifyCustody>>;
 };
 
@@ -106,24 +151,34 @@ export async function verifyExhibit(id: string): Promise<VerificationReport> {
     const actual = await hashIfPresent(p.original_path);
     pageResults.push({ index: p.page_index, expected: p.sha256, actual, ok: actual === p.sha256 });
   }
-  const digest = await captureDigest(
-    pageResults.map((p) => p.actual ?? 'missing'),
-    sha256,
-  );
   const versionResults: VerificationReport['versions'] = [];
   for (const v of versions) {
     const actual = await hashIfPresent(v.file_path);
     versionResults.push({ version: v.version, expected: v.sha256, actual, ok: actual === v.sha256 });
   }
+  const digest = await captureDigest(
+    ex.kind === 'pdf' ? [versionResults.find((v) => v.version === 1)?.actual ?? 'missing'] : pageResults.map((p) => p.actual ?? 'missing'),
+    sha256,
+  );
+  // Original source files (imports, book spreads) recorded in the first custody entry.
+  const first = (await listCustody(db, id))[0];
+  const recorded = (first ? (JSON.parse(first.details) as { sourceFiles?: { name: string; sha256: string; storedAs: string }[] }).sourceFiles : undefined) ?? [];
+  const sourceResults: VerificationReport['sources'] = [];
+  for (const f of recorded) {
+    const actual = await hashIfPresent(f.storedAs);
+    sourceResults.push({ name: f.name, expected: f.sha256, actual, ok: actual === f.sha256 });
+  }
   const custody = await verifyCustody(db, id);
   const captureDigestOk = digest === ex.capture_digest;
-  const ok = captureDigestOk && pageResults.every((p) => p.ok) && versionResults.every((v) => v.ok) && custody.ok;
+  const ok =
+    captureDigestOk && pageResults.every((p) => p.ok) && versionResults.every((v) => v.ok) && sourceResults.every((f) => f.ok) && custody.ok;
   const report: VerificationReport = {
     ok,
     checkedAt: new Date().toISOString(),
     pages: pageResults,
     captureDigestOk,
     versions: versionResults,
+    sources: sourceResults,
     custody,
   };
   await db.withExclusiveTransactionAsync(async (tx) => {
@@ -137,6 +192,8 @@ export async function verifyExhibit(id: string): Promise<VerificationReport> {
         pagesFailed: pageResults.filter((p) => !p.ok).map((p) => p.index + 1),
         versionsChecked: versionResults.length,
         versionsFailed: versionResults.filter((v) => !v.ok).map((v) => v.version),
+        sourcesChecked: sourceResults.length,
+        sourcesFailed: sourceResults.filter((f) => !f.ok).map((f) => f.name),
         captureDigestOk,
         custodyChainOk: custody.ok,
       },

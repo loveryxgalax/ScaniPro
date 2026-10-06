@@ -82,5 +82,8 @@ export const ACTION_LABELS: Record<CustodyAction, string> = {
   shared: 'Shared',
   verified: 'Integrity verified',
   verification_failed: 'Integrity check FAILED',
-  deleted: 'Withdrawn',
+  deleted: 'Moved to Recently Deleted',
+  imported: 'Imported',
+  restored: 'Restored',
+  purged: 'Permanently deleted',
 };

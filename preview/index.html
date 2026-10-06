@@ -125,6 +125,16 @@ mark { background: var(--a-primary-soft); color: var(--a-text); font-weight: 700
 svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 svg.i.sm { width: 14px; height: 14px; }
 
+.dockbar { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 18px; padding: 0 14px; height: 72px; border-radius: 36px; background: var(--a-surface); border: 1px solid var(--a-border); backdrop-filter: blur(18px); box-shadow: 0 14px 30px -12px rgba(0,0,0,.45); }
+.app-dark .dockbar { background: rgba(20,28,48,.92); }
+.dockbar .side { width: 56px; display: grid; place-items: center; color: var(--a-text); }
+.dockbar .main { width: 60px; height: 60px; border-radius: 30px; background: var(--a-grad); display: grid; place-items: center; color: #fff; box-shadow: 0 10px 22px -6px var(--a-shadow); }
+.tgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; }
+.tile { display: flex; flex-direction: column; align-items: center; gap: 6px; font: 600 11.5px var(--ui); color: var(--a-text); text-align: center; position: relative; }
+.tile .box { width: 62px; height: 62px; border-radius: 20px; background: var(--a-surface); border: 1px solid var(--a-border); display: grid; place-items: center; }
+.tile .box span { width: 40px; height: 40px; border-radius: 13px; background: var(--a-grad); color: #fff; display: grid; place-items: center; }
+.tile .pro { position: absolute; top: -5px; right: 2px; font: 800 8.5px var(--ui); color: var(--a-primary); background: var(--a-surface); border: 1px solid var(--a-border); border-radius: 7px; padding: 1px 4px; }
+.sect { font: 800 19px var(--ui); letter-spacing: -.02em; margin: 6px 0 2px; }
 /* Screenshot mode (#shot-N): 430×932 CSS px at 3× = 1290×2796 */
 body.shot { margin: 0; padding: 0; overflow: hidden; }
 body.shot .desk { display: none; }
@@ -161,6 +171,16 @@ body.shot.shot-light .shotframe { background: radial-gradient(90% 50% at 15% 0%,
 
 <script>
 const I = {
+  grid4: '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>',
+  img: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 8"/>',
+  book: '<path d="M4 5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1z"/><path d="M12 6v14"/>',
+  qr: '<rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2"/>',
+  receipt: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+  merge: '<circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 8v8M8 6c6 0 6 6 8 6"/>',
+  word: '<path d="M7 3h7l5 5v13H7z"/><path d="m9 12 1.5 5 1.5-4 1.5 4 1.5-5"/>',
+  slides: '<rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4M8 20h8"/>',
+  trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+  files: '<path d="M7 3h7l5 5v13H7z"/><path d="M12 11v6M9 14l3 3 3-3"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   case: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
@@ -229,7 +249,7 @@ const screens = {
     <div class="large">ScaniPro</div><div class="cap">Your case files are locked. Everything stays on this iPhone.</div>
     <div style="width:100%;margin-top:34px"><button class="btn" data-go="cases">${ic('scan')}Unlock with Face ID</button></div></div>`,
 
-  cases: () => `${status()}${header('', { right: `<span class="tap hbtn" data-go="search" role="button" tabindex="0">${ic('search', 'sm')}</span><span class="tap hbtn" data-go="settings" role="button" tabindex="0">${ic('gear', 'sm')}</span>` })}
+  cases: () => `${status()}${header('', { right: `<span class="tap hbtn" data-go="search" role="button" tabindex="0">${ic('search', 'sm')}</span><span class="tap hbtn" role="button" tabindex="0">${ic('more', 'sm')}</span>` }).replace('<span></span>', `<span class="tap hbtn" data-go="settings" role="button" tabindex="0">${ic('gear', 'sm')}</span>`)}
     <div class="body"><div class="large">Cases</div>
     <div class="hero"><div class="top">${ic('shield', 'sm')}Sealed on this iPhone</div><div class="stats"><div><div class="v">3</div><div class="k">Cases</div></div><div><div class="v">24</div><div class="k">Exhibits</div></div><div><div class="v">74</div><div class="k">Pages hashed</div></div></div></div>
     <div><span class="seal">On-device · no account · nothing uploaded</span></div>
@@ -238,7 +258,17 @@ const screens = {
       ['Okafor — workplace investigation', 'HR-INV-0931', 8, 23, 'Sep 22, 2026', '2 d ago', null],
       ['Storm damage claim, 77 Birch Rd', 'CLM 77-4410-HD', 11, 37, 'Jul 30, 2026', '6 d ago', null],
     ].map(([t, r, e, p, d, a, go]) => `<div class="card tap" ${go ? `data-go="${go}"` : ''} role="button" tabindex="0"><div class="row"><div class="icon-tile">${ic('case')}</div><div class="grow"><div style="font-weight:600;font-size:16.5px">${t}</div><div class="mono">Ref. ${r}</div><div class="badges"><span class="badge p">${e} exhibits</span><span class="badge">${p} pages</span><span class="badge">${d}</span></div></div></div><div class="cap" style="margin-top:10px">Last activity ${a}</div></div>`).join('')}
-    </div><div class="dock"><button class="btn">${ic('plus')}New Case</button></div>`,
+    </div><div class="dockbar"><span class="side tap" data-go="tools" role="button" tabindex="0">${ic('grid4')}</span><span class="main">${ic('scan')}</span><span class="side">${ic('img')}</span></div>`,
+
+  tools: () => `${status()}${header('Tools', { back: 'cases' })}<div class="body">
+    ${[
+      ['Scan', [['scan', 'Document'], ['text', 'Text'], ['book', 'Book'], ['qr', 'QR Code']]],
+      ['Create', [['folder', 'Case'], ['brief', 'Evidence Packet', 1], ['receipt', 'Expense Report', 1], ['merge', 'Merge PDFs', 1]]],
+      ['Import', [['files', 'Files'], ['img', 'Photos']]],
+      ['Export', [['doc', 'to Text'], ['img', 'to Image'], ['word', 'to Word', 1], ['slides', 'to PowerPoint', 1]]],
+      ['Edit &amp; verify', [['sign', 'Sign', 1], ['shield', 'Verify Case'], ['search', 'Search'], ['trash', 'Recently Deleted']]],
+    ].map(([t, items]) => `<div class="sect">${t}</div><div class="tgrid">${items.map(([i, l, pro]) => `<div class="tile"><div class="box"><span>${ic(i, 'sm')}</span></div>${pro ? '<span class="pro">PRO</span>' : ''}${l}</div>`).join('')}</div>`).join('')}
+    <div class="cap" style="text-align:center;margin-top:8px">Every tool runs on this iPhone. Nothing is uploaded.</div></div>`,
 
   case: () => `${status()}${header('CV-2026-01482', { back: 'cases', right: ic('more') })}
     <div class="body"><div class="large" style="font-size:30px">Harper v. Lakeside Property Mgmt</div>
@@ -333,10 +363,11 @@ const screens = {
 };
 screens.exhibit1 = screens.exhibit;
 
-const SCREEN_LIST = [['lock', 'Face ID lock'], ['cases', 'Cases'], ['case', 'Case & exhibits'], ['exhibit', 'Exhibit detail'], ['search', 'Search'], ['export', 'Export packet'], ['packet', 'Packet PDF'], ['annotate', 'Sign'], ['paywall', 'Paywall'], ['settings', 'Settings']];
+const SCREEN_LIST = [['lock', 'Face ID lock'], ['cases', 'Cases'], ['tools', 'Tools'], ['case', 'Case & exhibits'], ['exhibit', 'Exhibit detail'], ['search', 'Search'], ['export', 'Export packet'], ['packet', 'Packet PDF'], ['annotate', 'Sign'], ['paywall', 'Paywall'], ['settings', 'Settings']];
 const NOTES = {
   lock: ['Face ID or passcode on launch', 'Content is also hidden in the app switcher. Re-lock interval is set in Settings.'],
   cases: ['One case per matter', 'Free tier: 1 case and 5 exhibits. The privacy line is always visible.'],
+  tools: ['Tools hub', 'Scan (document, text, book, QR), import Files/Photos, export to text/images/.docx/.pptx, merge, expense reports, verify a whole case.'],
   case: ['Exhibits are numbered automatically', 'Each row shows OCR status, version and the current SHA-256 prefix. Numbers are never reused.'],
   exhibit: ['Four tabs: pages, text, integrity, log', 'Try the tabs. The custody log is hash-chained and append-only; tap Sign to see a derived version.'],
   search: ['Full-text search across every case', 'SQLite FTS5 on device with highlighted snippets.'],

@@ -13,12 +13,14 @@ import { deviceContext } from '@/lib/platform/device';
 import { clearExports, storageUsedBytes } from '@/lib/platform/files';
 import { deleteAllData } from '@/lib/services/cases';
 import { lockStore, setLockEnabled, setRelockAfter, type RelockAfter } from '@/lib/state/lock';
+import { prefsStore, setPref } from '@/lib/state/prefs';
 import { proStore, restorePro } from '@/lib/state/pro';
 import { space } from '@/theme';
 
 export default function SettingsScreen() {
   const { enabled, relockAfter, biometryLabel } = lockStore.use((s) => s);
   const { isPro, purchaseState } = proStore.use((s) => s);
+  const scanQuality = prefsStore.use((s) => s.scanQuality);
   const [storage, setStorage] = useState(0);
   useQuery(async () => setStorage(storageUsedBytes()), []);
   const device = deviceContext();
@@ -47,6 +49,25 @@ export default function SettingsScreen() {
             />
           </View>
         ) : null}
+      </Card>
+
+      <T variant="label">Scanning</T>
+      <Card style={{ paddingVertical: space.sm, gap: 0 }}>
+        <View style={{ paddingVertical: space.md, gap: space.sm }}>
+          <T style={{ fontWeight: '600' }}>Image quality</T>
+          <Segmented<'high' | 'standard'>
+            value={scanQuality}
+            onChange={(v) => void setPref('scanQuality', v)}
+            options={[
+              { value: 'high', label: 'High (best for evidence)' },
+              { value: 'standard', label: 'Standard (smaller)' },
+            ]}
+          />
+        </View>
+        <Divider />
+        <Row icon="text-outline" title="Text recognition" subtitle="On-device, languages detected automatically" />
+        <Divider />
+        <Row icon="trash-outline" title="Recently Deleted" subtitle="Restore withdrawn exhibits for 30 days" onPress={() => router.push('/trash')} />
       </Card>
 
       <T variant="label">ScaniPro Pro</T>

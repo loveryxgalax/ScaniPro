@@ -20,6 +20,7 @@ import type { CustodyRow } from '@/lib/db/types';
 import { formatDateTime } from '@/lib/format';
 import { passGate } from '@/lib/gates';
 import { toAbsolute } from '@/lib/platform/files';
+import { exportExhibit, type ExportFormat } from '@/lib/services/exports';
 import {
   renameExhibit,
   shareExhibitVersion,
@@ -122,8 +123,28 @@ export default function ExhibitScreen() {
   const imgW = width - space.lg * 2;
   const processing = !exhibit.current_version_id;
 
+  const exportAs = () =>
+    showActionSheet('Export as', [
+      { label: 'Text (.txt)', onPress: () => void runExport('text') },
+      { label: 'Images (.jpg)', onPress: () => void runExport('images') },
+      { label: `Word document (.docx)${isPro ? '' : ' · Pro'}`, onPress: () => passGate(canUse(isPro, 'office_export')) && void runExport('docx') },
+      { label: `PowerPoint (.pptx)${isPro ? '' : ' · Pro'}`, onPress: () => passGate(canUse(isPro, 'office_export')) && void runExport('pptx') },
+    ]);
+
+  const runExport = async (format: ExportFormat) => {
+    try {
+      await exportExhibit(exhibit.id, format);
+    } catch (e) {
+      Alert.alert('Could not export', (e as Error).message);
+    }
+  };
+
   const annotate = () => {
     if (!selected) return;
+    if (exhibit.kind === 'pdf') {
+      Alert.alert('Not available for imported PDFs', 'Signatures are drawn over scanned page images. Imported PDFs are kept exactly as received.');
+      return;
+    }
     if (passGate(canUse(isPro, 'signatures'))) {
       router.push({ pathname: '/exhibit/annotate', params: { id: exhibit.id, versionId: selected.id } });
     }
@@ -155,6 +176,7 @@ export default function ExhibitScreen() {
       { label: 'Rename', onPress: () => setRenaming(true) },
       { label: 'Annotate or Sign (new version)', onPress: annotate },
       { label: 'Share PDF', onPress: () => void share() },
+      { label: 'Export as…', onPress: exportAs },
       { label: 'Verify Integrity', onPress: () => void verify() },
       {
         label: 'Withdraw Exhibit…',
@@ -162,7 +184,7 @@ export default function ExhibitScreen() {
         onPress: () =>
           confirm(
             `Withdraw Exhibit ${exhibit.number}?`,
-            'The files are deleted from this iPhone. The exhibit number is never reused, and its custody log is kept and closed with a "Withdrawn" entry so packets show the gap honestly.',
+            'It moves to Recently Deleted for 30 days, where you can restore it. After that its files are erased. The exhibit number is never reused, and the custody log records both steps.',
             'Withdraw',
             () => setWithdrawing(true),
           ),
@@ -192,9 +214,10 @@ export default function ExhibitScreen() {
           </View>
         </View>
 
-        <View style={{ flexDirection: 'row', gap: space.md }}>
-          <Button title="Share PDF" icon="share-outline" variant="secondary" onPress={() => void share()} disabled={!selected} style={{ flex: 1 }} />
-          <Button title="Sign" icon="create-outline" variant="secondary" onPress={annotate} disabled={!selected} style={{ flex: 1 }} />
+        <View style={{ flexDirection: 'row', gap: space.sm }}>
+          <Button title="Share" icon="share-outline" variant="secondary" onPress={() => void share()} disabled={!selected} style={{ flex: 1, paddingHorizontal: space.sm }} />
+          <Button title="Export" icon="download-outline" variant="secondary" onPress={exportAs} disabled={!selected} style={{ flex: 1, paddingHorizontal: space.sm }} />
+          <Button title="Sign" icon="create-outline" variant="secondary" onPress={annotate} disabled={!selected} style={{ flex: 1, paddingHorizontal: space.sm }} />
         </View>
 
         <Segmented<Tab>
@@ -222,6 +245,14 @@ export default function ExhibitScreen() {
             {selected && selected.kind === 'derived' ? (
               <Banner tone="warning" icon="git-branch-outline" title="Derived version" body={`${selected.description}. The original capture is unchanged and remains Version 1.`} />
             ) : null}
+            {exhibit.kind === 'pdf' ? (
+              <Card style={{ alignItems: 'center', gap: space.md, paddingVertical: space.xl }}>
+                <IconChip icon="document-text" size={64} />
+                <T variant="heading">Imported PDF · {exhibit.page_count} page{exhibit.page_count === 1 ? '' : 's'}</T>
+                <T variant="caption" style={{ textAlign: 'center' }}>Kept byte-for-byte exactly as received. Share it to open it in Files or another app.</T>
+                <Button title="Open or Share PDF" icon="share-outline" onPress={() => void share()} style={{ alignSelf: 'stretch' }} />
+              </Card>
+            ) : null}
             {pages.map((p) => {
               const h = (imgW * p.height) / p.width;
               return (
@@ -241,6 +272,9 @@ export default function ExhibitScreen() {
           <View style={{ gap: space.md }}>
             {exhibit.ocr_status === 'pending' || exhibit.ocr_status === 'running' ? (
               <Banner icon="hourglass-outline" title="Recognising text on this iPhone…" body="This takes a few seconds per page. Nothing is uploaded." />
+            ) : null}
+            {exhibit.kind === 'pdf' ? (
+              <Banner icon="document-text-outline" title="Imported PDFs keep their own text" body="ScaniPro doesn't alter imported PDFs, so it doesn't add an OCR layer. Search finds this exhibit by its title." />
             ) : null}
             {exhibit.ocr_status === 'failed' ? (
               <Banner tone="warning" icon="alert-circle-outline" title="No text could be recognised" body="The exhibit is still sealed and usable; it just isn't searchable." />
@@ -269,11 +303,12 @@ export default function ExhibitScreen() {
           <View style={{ gap: space.md }}>
             {report ? (
               report.ok ? (
-                <Banner tone="success" icon="shield-checkmark" title="Integrity verified" body={`All ${report.pages.length} original pages, ${report.versions.length} file version(s) and ${report.custody.entries} custody entries match their recorded hashes. Checked ${formatDateTime(report.checkedAt)}.`} />
+                <Banner tone="success" icon="shield-checkmark" title="Integrity verified" body={`All ${report.pages.length} original page(s), ${report.versions.length} file version(s)${report.sources.length ? `, ${report.sources.length} source file(s)` : ''} and ${report.custody.entries} custody entries match their recorded hashes. Checked ${formatDateTime(report.checkedAt)}.`} />
               ) : (
                 <Banner tone="danger" icon="warning" title="Integrity check failed" body={[
                   ...report.pages.filter((p) => !p.ok).map((p) => `Page ${p.index + 1} ${p.actual ? 'changed' : 'is missing'}.`),
                   ...report.versions.filter((v) => !v.ok).map((v) => `Version ${v.version} ${v.actual ? 'changed' : 'is missing'}.`),
+                  ...report.sources.filter((f) => !f.ok).map((f) => `Source file ${f.name} ${f.actual ? 'changed' : 'is missing'}.`),
                   report.captureDigestOk ? '' : 'Capture digest does not match.',
                   report.custody.ok ? '' : `Custody log: ${report.custody.reason} at entry ${report.custody.brokenAtSeq}.`,
                 ].filter(Boolean).join(' ')} />

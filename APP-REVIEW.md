@@ -60,7 +60,7 @@ Everything needed to get ScaniPro through App Review on the first try: a pre-sub
 >
 > **External services / data collection:** None. There is no backend, no analytics, no advertising, no crash reporting and no tracking. OCR uses Apple's on-device Vision framework. All files are stored in the app container with NSFileProtectionComplete. The only network traffic is StoreKit for the optional in-app purchase. App Privacy is "Data Not Collected".
 >
-> **Permissions:** Camera (only when the user taps Scan Exhibit, via the system document camera). Face ID (optional app lock; falls back to the device passcode; can be turned off in Settings › Security).
+> **Permissions:** Camera (only when the user scans a document or a QR code). Photo library (only when the user chooses photos to import; the system picker is used). Face ID (optional app lock; falls back to the device passcode; can be turned off in Settings › Security).
 >
 > **How to test every feature (physical iPhone required for the camera):**
 > 1. Launch → unlock with Face ID or passcode.
@@ -72,7 +72,8 @@ Everything needed to get ScaniPro through App Review on the first try: a pre-sub
 > 7. **In-app purchase:** the free version allows 1 case and 5 exhibits. Tap **Sign** on an exhibit, or **Export Packet** on the case, or try creating a second case → the ScaniPro Pro screen appears. Buy with the sandbox account; Restore Purchases is on the same screen and in Settings. Product: `com.hyperadrenax.scanipro.pro` (non-consumable).
 > 8. With Pro: **Sign** → draw a signature → **Use Signature** → tap the page → **Save** → **Create Version**. The exhibit now shows "Version 2 (derived)"; the original stays as Version 1, and the Log shows "Signed".
 > 9. On the case, tap **Export Packet** → **Generate Packet** → tap any file to open the share sheet.
-> 10. **Settings** shows the app lock, Restore Purchases, privacy statement and Delete All Data.
+> 10. **Tools** (grid icon at the bottom left of the home screen): Text scan, Book scan, QR Code, import from Files/Photos, export to Text/Image/.docx/.pptx, Merge PDFs, Expense Report, Verify Case, Recently Deleted. All run on-device.
+> 11. **Settings** shows the app lock, scanning quality, Restore Purchases, privacy statement and Delete All Data.
 >
 > A screen recording of this flow on an iPhone is attached / linked here: `<link>`.
 >
@@ -146,7 +147,7 @@ Use in Resolution Center. Edit the bracketed parts.
 > Thank you. ScaniPro's paid features are unlocked exclusively through Apple In-App Purchase:
 >
 > - **Product:** `com.hyperadrenax.scanipro.pro`, a **non-consumable**, attached to this version and submitted for review.
-> - **What it unlocks:** unlimited cases and exhibits, evidence packet export, and signatures/annotations. Free users keep full access to scanning, OCR, search, hashing, custody logs and verification for 1 case and 5 exhibits.
+> - **What it unlocks:** unlimited cases and exhibits, evidence packet export, signatures/annotations, .docx/.pptx export, merging exhibits and expense reports. Free users keep full access to scanning, OCR, search, hashing, custody logs and verification for 1 case and 5 exhibits.
 > - **Restore:** "Restore Purchases" is on the Pro screen and in Settings.
 > - **Edge cases handled:** user cancel (no error shown), pending/Ask to Buy (clear "Waiting for approval" state; unlocks automatically when approved), price fails to load (purchase button disabled with a Retry action), already owned (prompts to restore), and refunds/revocations (Pro is removed after the next successful store check).
 > - There are no external purchase links, codes, or alternative payment methods in the app or metadata.

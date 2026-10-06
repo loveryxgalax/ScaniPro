@@ -1,5 +1,3 @@
-import * as Sharing from 'expo-sharing';
-
 import { verifyChain } from '../core/custody';
 import { buildManifest, manifestToCsv, type ManifestExhibit } from '../core/manifest';
 import { buildPacketPdf, type PacketExhibit } from '../core/packetPdf';
@@ -10,13 +8,14 @@ import { appendCustody, listCustody, rowToEntry } from '../db/custody';
 import { getCase, listExhibits, listPages, listVersions, listWithdrawnNumbers } from '../db/queries';
 import { notifyDataChanged } from '../events';
 import { deviceContext } from '../platform/device';
-import { exportFile, readBytes } from '../platform/files';
+import { readBytes } from '../platform/files';
 import { sha256 } from '../platform/hash';
 import { exhibitFileName, versionLabel } from './exhibits';
+import { saveExport, shareExport, type ExportedFile } from './share';
+
+export { shareExport, type ExportedFile };
 
 export type PacketOptions = { useLatestVersions: boolean; embedExhibitFiles: boolean };
-
-export type ExportedFile = { name: string; uri: string; sha256: string; bytes: number; mimeType: string; uti: string };
 
 export type PacketExport = {
   packet: ExportedFile;
@@ -29,12 +28,6 @@ export type PacketExport = {
 
 function stamp(d: Date) {
   return d.toISOString().slice(0, 16).replace(/[-:]/g, '').replace('T', '-');
-}
-
-async function save(name: string, bytes: Uint8Array, mimeType: string, uti: string): Promise<ExportedFile> {
-  const f = exportFile(name);
-  f.write(bytes);
-  return { name, uri: f.uri, sha256: await sha256(bytes), bytes: bytes.length, mimeType, uti };
 }
 
 export async function exportPacket(
@@ -125,7 +118,7 @@ export async function exportPacket(
 
   const base = `EvidencePacket_${safeFileName(c.reference || c.title, 'Case')}_${stamp(generatedAt)}`;
   onProgress?.('Hashing and writing files…');
-  const packet = await save(`${base}.pdf`, result.pdf, 'application/pdf', 'com.adobe.pdf');
+  const packet = await saveExport(`${base}.pdf`, result.pdf, 'pdf');
   const manifest = buildManifest({
     generatedAt,
     device,
@@ -143,8 +136,8 @@ export async function exportPacket(
   });
   const jsonBytes = utf8(`${JSON.stringify(manifest, null, 2)}\n`);
   const csvBytes = utf8(manifestToCsv(manifest));
-  const manifestJson = await save(`${base}_manifest.json`, jsonBytes, 'application/json', 'public.json');
-  const manifestCsv = await save(`${base}_manifest.csv`, csvBytes, 'text/csv', 'public.comma-separated-values-text');
+  const manifestJson = await saveExport(`${base}_manifest.json`, jsonBytes, 'json');
+  const manifestCsv = await saveExport(`${base}_manifest.csv`, csvBytes, 'csv');
 
   const readme = [
     'ScaniPro evidence bundle',
@@ -176,7 +169,7 @@ export async function exportPacket(
     ],
     generatedAt,
   );
-  const bundle = await save(`${base}.zip`, zip, 'application/zip', 'public.zip-archive');
+  const bundle = await saveExport(`${base}.zip`, zip, 'zip');
 
   onProgress?.('Recording custody entries…');
   for (const ex of exhibits) {
@@ -210,8 +203,4 @@ export async function exportPacket(
     pageCount: result.pageCount,
     exhibitCount: exhibits.length,
   };
-}
-
-export async function shareExport(file: ExportedFile) {
-  await Sharing.shareAsync(file.uri, { mimeType: file.mimeType, UTI: file.uti, dialogTitle: file.name });
 }

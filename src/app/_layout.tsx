@@ -9,6 +9,8 @@ import { LockGate } from '@/components/LockGate';
 import { Banner, Screen } from '@/components/ui';
 import { getDb } from '@/lib/db';
 import { resumePendingProcessing } from '@/lib/services/capture';
+import { purgeExpired } from '@/lib/services/exhibits';
+import { loadPrefs } from '@/lib/state/prefs';
 import { initLock } from '@/lib/state/lock';
 import { initPro } from '@/lib/state/pro';
 import { dark, light } from '@/theme';
@@ -25,9 +27,11 @@ export default function RootLayout() {
     (async () => {
       try {
         await Promise.all([getDb(), initLock()]);
+        await loadPrefs().catch(() => undefined);
         setReady(true);
         void initPro();
         void resumePendingProcessing();
+        void purgeExpired().catch(() => undefined);
       } catch (e) {
         setFatal((e as Error).message);
       } finally {
@@ -87,6 +91,13 @@ export default function RootLayout() {
             <Stack.Screen name="settings" options={{ title: 'Settings' }} />
             <Stack.Screen name="integrity" options={{ title: 'How Evidence Is Protected' }} />
             <Stack.Screen name="paywall" options={{ presentation: 'modal', title: 'ScaniPro Pro' }} />
+            <Stack.Screen name="tools/index" options={{ title: 'Tools' }} />
+            <Stack.Screen name="tools/pick" options={{ title: 'Choose Exhibit' }} />
+            <Stack.Screen name="tools/text" options={{ title: 'Scan Text' }} />
+            <Stack.Screen name="tools/qr" options={{ title: 'QR Code', headerTransparent: true, headerTintColor: '#FFFFFF', headerBlurEffect: undefined }} />
+            <Stack.Screen name="tools/merge" options={{ title: 'Merge PDFs' }} />
+            <Stack.Screen name="tools/expense" options={{ title: 'Expense Report' }} />
+            <Stack.Screen name="trash" options={{ title: 'Recently Deleted' }} />
           </Stack>
         </LockGate>
       </ThemeProvider>
