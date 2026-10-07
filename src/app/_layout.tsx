@@ -17,6 +17,9 @@ import { dark, light } from '@/theme';
 
 void SplashScreen.preventAutoHideAsync();
 
+// iOS 26+ draws its own glass scroll-edge effect under headers; adding a blur on top doubles it.
+const IOS_26_PLUS = Platform.OS === 'ios' && parseInt(String(Platform.Version), 10) >= 26;
+
 export default function RootLayout() {
   const scheme = useColorScheme();
   const c = scheme === 'dark' ? dark : light;
@@ -75,7 +78,7 @@ export default function RootLayout() {
               headerLargeTitleShadowVisible: false,
               // iOS: frosted glass header floating over the ambient glow.
               headerTransparent: Platform.OS === 'ios',
-              headerBlurEffect: scheme === 'dark' ? 'systemChromeMaterialDark' : 'systemChromeMaterialLight',
+              headerBlurEffect: IOS_26_PLUS ? undefined : scheme === 'dark' ? 'systemChromeMaterialDark' : 'systemChromeMaterialLight',
               headerStyle: Platform.OS === 'ios' ? undefined : { backgroundColor: c.bg },
               contentStyle: { backgroundColor: c.bg },
               headerBackButtonDisplayMode: 'minimal',
