@@ -107,7 +107,7 @@ First release.
 | referenceName | CaseSeal Pro |
 | displayName | CaseSeal Pro |
 | description | Unlimited cases, packets, exports & signing |
-| suggestedPrice | USD 19.99 |
+| suggestedPrice | USD 5.99 |
 
 ## App Privacy
 Data Not Collected. (Apple processes in-app purchase payments; that does not count as developer collection.)

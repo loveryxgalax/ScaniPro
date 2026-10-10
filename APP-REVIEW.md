@@ -16,7 +16,7 @@ Everything needed to get CaseSeal through App Review on the first try: a pre-sub
 ### In-app purchase (Guideline 3.1.1 / 2.1)
 - [ ] App Store Connect → CaseSeal → **In-App Purchases** → **+** → **Non-Consumable**.
   - Reference name: `CaseSeal Pro` · Product ID: `com.hyperadrenax.caseseal.pro` (must equal `expo.extra.proProductId`).
-  - Price: USD 19.99 (or your choice) · Availability: all territories.
+  - Price: USD 5.99 (or your choice) · Availability: all territories.
   - Localization (en-US): display name `CaseSeal Pro`, description `Unlimited cases, packets & signing`.
   - Review screenshot: `store/screenshots/` has the paywall in the preview, but upload a **real device screenshot of the Pro screen** (Settings › Upgrade to Pro).
   - Review notes: "Unlocks unlimited cases/exhibits, evidence packet export, and signatures. Purchase from Settings › Upgrade to Pro, or any locked feature."
