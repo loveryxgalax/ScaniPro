@@ -11,7 +11,7 @@ Everything needed to get CaseSeal through App Review on the first try: a pre-sub
 - [ ] App Store Connect → Apps → **+ New App**: platform iOS, name **CaseSeal: Evidence PDF Scanner**, bundle ID **com.hyperadrenax.caseseal**, SKU `caseseal-ios`, primary language English (U.S.).
 - [ ] Copy the numeric **Apple ID** of the app into `eas.json` → `submit.production.ios.ascAppId`.
 - [ ] **Agreements, Tax, and Banking**: Paid Apps agreement is *Active* (in-app purchases will not load in review otherwise).
-- [ ] Support email set in `app.json` → `expo.extra.supportEmail` and in `site/privacy.html` + `site/support.html` (replace `REPLACE_WITH_SUPPORT_EMAIL`).
+- [x] Support email set: riverlake.raptors@gmail.com (app, privacy and support pages).
 
 ### In-app purchase (Guideline 3.1.1 / 2.1)
 - [ ] App Store Connect → CaseSeal → **In-App Purchases** → **+** → **Non-Consumable**.
