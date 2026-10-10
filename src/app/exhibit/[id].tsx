@@ -124,7 +124,9 @@ export default function ExhibitScreen() {
   const processing = !exhibit.current_version_id;
 
   const exportAs = () =>
-    showActionSheet('Export as', [
+    exhibit.kind === 'pdf'
+      ? showActionSheet('Export as', [{ label: 'PDF (original, unchanged)', onPress: () => void share() }])
+      : showActionSheet('Export as', [
       { label: 'Text (.txt)', onPress: () => void runExport('text') },
       { label: 'Images (.jpg)', onPress: () => void runExport('images') },
       { label: `Word document (.docx)${isPro ? '' : ' · Pro'}`, onPress: () => passGate(canUse(isPro, 'office_export')) && void runExport('docx') },
