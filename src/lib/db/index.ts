@@ -21,7 +21,12 @@ async function migrate(db: SQLiteDatabase) {
 export function getDb(): Promise<SQLiteDatabase> {
   if (!dbPromise) {
     dbPromise = (async () => {
-      const db = await openDatabaseAsync('caseseal.db');
+      // expo-sqlite finalizes every open statement before closing a connection,
+      // including FTS5's internal ones, which FTS5 then finalizes again on
+      // sqlite3_close (use-after-free crash when a withExclusiveTransactionAsync
+      // connection closes). We never keep prepared statements, so skip it.
+      // Transactions inherit these options.
+      const db = await openDatabaseAsync('caseseal.db', { finalizeUnusedStatementsBeforeClosing: false });
       await migrate(db);
       return db;
     })().catch((e) => {
