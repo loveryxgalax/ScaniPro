@@ -1,0 +1,128 @@
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, type ErrorBoundaryProps } from 'expo-router';
+import * as Clipboard from 'expo-clipboard';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
+import { Platform, useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { LockGate } from '@/components/LockGate';
+import { Banner, Button, Screen, T } from '@/components/ui';
+import { getDb } from '@/lib/db';
+import { resumePendingProcessing } from '@/lib/services/capture';
+import { purgeExpired } from '@/lib/services/exhibits';
+import { loadPrefs } from '@/lib/state/prefs';
+import { initLock } from '@/lib/state/lock';
+import { initPro } from '@/lib/state/pro';
+import { dark, light } from '@/theme';
+
+void SplashScreen.preventAutoHideAsync();
+
+// iOS 26+ draws its own glass scroll-edge effect under headers; adding a blur on top doubles it.
+const IOS_26_PLUS = Platform.OS === 'ios' && parseInt(String(Platform.Version), 10) >= 26;
+
+/**
+ * Shown instead of closing the app if a screen throws. Evidence is stored on
+ * disk and in SQLite, so nothing is lost; the user can retry or copy details.
+ */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  const details = `${error.name}: ${error.message}\n${(error.stack ?? '').split('\n').slice(0, 8).join('\n')}`;
+  return (
+    <SafeAreaProvider>
+      <Screen>
+        <Banner tone="danger" icon="alert-circle" title="Something went wrong on this screen" body="Your cases and exhibits are safe on this iPhone. Tap Try Again, or copy the details and send them to support." />
+        <T variant="mono" selectable>{details}</T>
+        <Button title="Try Again" icon="refresh" onPress={() => void retry()} />
+        <Button title="Copy Error Details" icon="copy-outline" variant="secondary" onPress={() => void Clipboard.setStringAsync(details)} />
+      </Screen>
+    </SafeAreaProvider>
+  );
+}
+
+export default function RootLayout() {
+  const scheme = useColorScheme();
+  const c = scheme === 'dark' ? dark : light;
+  const [ready, setReady] = useState(false);
+  const [fatal, setFatal] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await Promise.all([getDb(), initLock()]);
+        await loadPrefs().catch(() => undefined);
+        setReady(true);
+        void initPro();
+        void resumePendingProcessing();
+        void purgeExpired().catch(() => undefined);
+      } catch (e) {
+        setFatal((e as Error).message);
+      } finally {
+        void SplashScreen.hideAsync();
+      }
+    })();
+  }, []);
+
+  const navTheme = {
+    ...(scheme === 'dark' ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(scheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+      primary: c.primary,
+      background: c.bg,
+      card: c.surface,
+      text: c.text,
+      border: c.border,
+    },
+  };
+
+  if (fatal) {
+    return (
+      <Screen>
+        <Banner tone="danger" icon="alert-circle" title="CaseSeal could not open its database" body={fatal} />
+      </Screen>
+    );
+  }
+  if (!ready) return null;
+
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider value={navTheme}>
+        <StatusBar style="auto" />
+        <LockGate>
+          <Stack
+            screenOptions={{
+              headerTintColor: c.text,
+              headerTitleStyle: { color: c.text, fontWeight: '700' },
+              headerLargeTitleStyle: { color: c.text, fontWeight: '800' },
+              headerShadowVisible: false,
+              headerLargeTitleShadowVisible: false,
+              // iOS: frosted glass header floating over the ambient glow.
+              headerTransparent: Platform.OS === 'ios',
+              headerBlurEffect: IOS_26_PLUS ? undefined : scheme === 'dark' ? 'systemChromeMaterialDark' : 'systemChromeMaterialLight',
+              headerStyle: Platform.OS === 'ios' ? undefined : { backgroundColor: c.bg },
+              contentStyle: { backgroundColor: c.bg },
+              headerBackButtonDisplayMode: 'minimal',
+            }}
+          >
+            <Stack.Screen name="index" options={{ title: 'Cases', headerLargeTitle: true }} />
+            <Stack.Screen name="case/new" options={{ presentation: 'modal', title: 'New Case' }} />
+            <Stack.Screen name="case/[id]" options={{ title: '' }} />
+            <Stack.Screen name="exhibit/[id]" options={{ title: '' }} />
+            <Stack.Screen name="exhibit/annotate" options={{ presentation: 'fullScreenModal', title: 'Annotate & Sign', headerShown: false }} />
+            <Stack.Screen name="export/[caseId]" options={{ presentation: 'modal', title: 'Evidence Packet' }} />
+            <Stack.Screen name="search" options={{ title: 'Search' }} />
+            <Stack.Screen name="settings" options={{ title: 'Settings' }} />
+            <Stack.Screen name="integrity" options={{ title: 'How Evidence Is Protected' }} />
+            <Stack.Screen name="paywall" options={{ presentation: 'modal', title: 'CaseSeal Pro' }} />
+            <Stack.Screen name="tools/index" options={{ title: 'Tools' }} />
+            <Stack.Screen name="tools/pick" options={{ title: 'Choose Exhibit' }} />
+            <Stack.Screen name="tools/text" options={{ title: 'Scan Text' }} />
+            <Stack.Screen name="tools/qr" options={{ title: 'QR Code', headerTransparent: true, headerTintColor: '#FFFFFF', headerBlurEffect: undefined }} />
+            <Stack.Screen name="tools/merge" options={{ title: 'Merge PDFs' }} />
+            <Stack.Screen name="tools/expense" options={{ title: 'Expense Report' }} />
+            <Stack.Screen name="trash" options={{ title: 'Recently Deleted' }} />
+          </Stack>
+        </LockGate>
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}

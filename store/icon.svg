@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <style>html,body{margin:0;padding:0;background:#070B14}</style>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121A33"/><stop offset="1" stop-color="#05080F"/></linearGradient>
+    <radialGradient id="glowA" cx="20%" cy="10%" r="75%"><stop offset="0" stop-color="#3B5BFF" stop-opacity=".55"/><stop offset="1" stop-color="#3B5BFF" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowB" cx="90%" cy="95%" r="70%"><stop offset="0" stop-color="#9B5CF6" stop-opacity=".55"/><stop offset="1" stop-color="#9B5CF6" stop-opacity="0"/></radialGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4F7CFF"/><stop offset="1" stop-color="#A066FF"/></linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E3E8F8"/></linearGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="34"/></filter>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#glowA)"/>
+  <rect width="1024" height="1024" fill="url(#glowB)"/>
+  <g fill="none" stroke="url(#accent)" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M196 330V236a40 40 0 0 1 40-40h94"/><path d="M694 196h94a40 40 0 0 1 40 40v94"/>
+    <path d="M828 694v94a40 40 0 0 1-40 40h-94"/><path d="M330 828h-94a40 40 0 0 1-40-40v-94"/>
+  </g>
+  <path d="M338 268h258l118 118v370a36 36 0 0 1-36 36H338a36 36 0 0 1-36-36V304a36 36 0 0 1 36-36z" fill="url(#paper)"/>
+  <path d="M596 268v90a28 28 0 0 0 28 28h90z" fill="#C6CEEA"/>
+  <g stroke="#A9B3D6" stroke-width="22" stroke-linecap="round"><path d="M372 424h180"/><path d="M372 482h262"/><path d="M372 540h262"/><path d="M372 598h140"/></g>
+  <circle cx="664" cy="694" r="140" fill="#7A6BFF" opacity=".6" filter="url(#blur)"/>
+  <circle cx="664" cy="694" r="124" fill="url(#accent)" stroke="#0A0F1E" stroke-width="16"/>
+  <path d="M608 694l40 40 76-82" fill="none" stroke="#FFFFFF" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
