@@ -61,7 +61,7 @@
     "check:listing": "node scripts/check-listing.mjs",
     "eas-build-pre-install": "node scripts/release-guard.mjs --if-production",
     "build:dev": "npx eas-cli@latest build --profile development --platform ios",
-    "build:prod": "npm run guard:release && npx eas-cli@latest build --profile production --platform ios",
+    "build:prod": "npm run guard:release && npx eas-cli@latest build --profile production --platform ios --auto-submit",
     "submit:ios": "npx eas-cli@latest submit --profile production --platform ios"
   },
   "private": true,
