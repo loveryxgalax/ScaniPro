@@ -1,4 +1,5 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider, type ErrorBoundaryProps } from 'expo-router';
+import * as Clipboard from 'expo-clipboard';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
@@ -6,7 +7,7 @@ import { Platform, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { LockGate } from '@/components/LockGate';
-import { Banner, Screen } from '@/components/ui';
+import { Banner, Button, Screen, T } from '@/components/ui';
 import { getDb } from '@/lib/db';
 import { resumePendingProcessing } from '@/lib/services/capture';
 import { purgeExpired } from '@/lib/services/exhibits';
@@ -19,6 +20,24 @@ void SplashScreen.preventAutoHideAsync();
 
 // iOS 26+ draws its own glass scroll-edge effect under headers; adding a blur on top doubles it.
 const IOS_26_PLUS = Platform.OS === 'ios' && parseInt(String(Platform.Version), 10) >= 26;
+
+/**
+ * Shown instead of closing the app if a screen throws. Evidence is stored on
+ * disk and in SQLite, so nothing is lost; the user can retry or copy details.
+ */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  const details = `${error.name}: ${error.message}\n${(error.stack ?? '').split('\n').slice(0, 8).join('\n')}`;
+  return (
+    <SafeAreaProvider>
+      <Screen>
+        <Banner tone="danger" icon="alert-circle" title="Something went wrong on this screen" body="Your cases and exhibits are safe on this iPhone. Tap Try Again, or copy the details and send them to support." />
+        <T variant="mono" selectable>{details}</T>
+        <Button title="Try Again" icon="refresh" onPress={() => void retry()} />
+        <Button title="Copy Error Details" icon="copy-outline" variant="secondary" onPress={() => void Clipboard.setStringAsync(details)} />
+      </Screen>
+    </SafeAreaProvider>
+  );
+}
 
 export default function RootLayout() {
   const scheme = useColorScheme();

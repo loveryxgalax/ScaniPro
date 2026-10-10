@@ -9,27 +9,25 @@ import { appendCustody } from '../db/custody';
 import { notifyDataChanged } from '../events';
 import { deleteExternal, deleteTree, exhibitDir, readBytes, readExternal, writeBytes } from '../platform/files';
 import { sha256 } from '../platform/hash';
-import { convertToJpeg, isJpeg, splitSpread } from '../platform/images';
+import { normaliseToJpeg, splitSpread } from '../platform/images';
 import { scanPages } from '../platform/scanner';
 import { prefsStore } from '../state/prefs';
 import { captureExhibit, type SourceFile } from './capture';
 
-/** Turns arbitrary picked images into JPEG pages, keeping the originals as hashed sources. */
+/**
+ * Turns picked images into upright, document-sized JPEG pages. Camera photos
+ * are often 12-48 MP and stored sideways with an EXIF rotation flag, so every
+ * import is re-encoded; the untouched original is kept as a hashed source.
+ */
 async function normalise(files: { uri: string; name: string }[]) {
   const pages: string[] = [];
   const sources: SourceFile[] = [];
   const temps: string[] = [];
   for (const f of files) {
-    const bytes = await readExternal(f.uri);
-    if (isJpeg(bytes)) {
-      pages.push(f.uri);
-      sources.push({ uri: f.uri, name: f.name, converted: false });
-    } else {
-      const jpg = await convertToJpeg(f.uri);
-      temps.push(jpg);
-      pages.push(jpg);
-      sources.push({ uri: f.uri, name: f.name, converted: true });
-    }
+    const jpg = await normaliseToJpeg(f.uri);
+    temps.push(jpg);
+    pages.push(jpg);
+    sources.push({ uri: f.uri, name: f.name, converted: true });
   }
   return { pages, sources, temps };
 }
